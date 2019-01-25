@@ -26,3 +26,11 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 All tests are under folder test. You'd better run the tests under Windows 7, because some wierd random errors happen when I run them under Ubuntu 14.04.
 
 # Latest official build 
+N/A
+
+# To Do
+    
+    a) Save information about a downloading task in a sqlite3 db until the user explicitly delete it.
+    b) Interupted tasks can be recovered.
+
+

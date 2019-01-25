@@ -3,3 +3,9 @@ test/TINY_WebServer/Makefile
 test/TINY_WebServer/TINY_WebServer
 test/TINY_WebServer/TINY_WebServer.pro.user
 test/build-TINY_WebServer-unknown-Debug/
+*.o
+moc*.cpp
+qrc_mDownloader.cpp
+ui_newtask.h
+mDownloader
+Makefile

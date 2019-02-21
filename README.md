@@ -30,7 +30,7 @@ N/A
 
 # To Do
     
-    a) Save information about a downloading task in a sqlite3 db until the user explicitly delete it.
+    a) Save information about a downloading task in a sqlite3 db until the user explicitly deletes it.
     b) Interupted tasks can be recovered.
 
 

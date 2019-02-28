@@ -32,5 +32,6 @@ N/A
     
     a) Save information about a downloading task in a sqlite3 db until the user explicitly delete it.
     b) Interupted tasks can be recovered.
+    c) Change the default save path accordingly when the filename changes
 
 

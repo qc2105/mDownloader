@@ -30,7 +30,7 @@ N/A
 
 # To Do
     
-    a) Save information about a downloading task in a sqlite3 db until the user explicitly delete it.
+    a) Save information about a downloading task in a sqlite3 db until the user explicitly deletes it.
     b) Interupted tasks can be recovered.
     c) Change the default save path accordingly when the filename changes
     d) Fix: when can't get file info, the task stucks at starting

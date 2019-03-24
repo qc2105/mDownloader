@@ -9,3 +9,6 @@ qrc_mDownloader.cpp
 ui_newtask.h
 mDownloader
 Makefile
+*.user
+*-Debug/
+*.stash

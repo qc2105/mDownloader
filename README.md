@@ -1,5 +1,5 @@
 # mDownloader
-mDownloader: A Cross-Platform Multiple-Threads GUI Download Accelerator Based on Qt.
+mDownloader: A cross-platform multiple-threads GUI download accelerator based on Qt and modified mytget(https://github.com/lytsing/mytget).
 It is fast, with maximum 99 threads do the downloading job at the same time, takes full advantage of your network resources when does HTTP/HTTPS/FTP downloading. 
 
 # How to build
@@ -16,7 +16,7 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 	a) Use Qt Creator to open mDownloader.pro
 	b) Press CTRL+R
 
-##Under Ubuntu 14.04:
+##Under Ubuntu 14.04 and above:
 
  	a) sudo apt-get install qtcreator
 	b) Use Qt Creator to open mDownloader.pro and build
@@ -33,5 +33,7 @@ N/A
     a) Save information about a downloading task in a sqlite3 db until the user explicitly delete it.
     b) Interupted tasks can be recovered.
     c) Change the default save path accordingly when the filename changes
+    d) Fix: when can't get file info, the task stucks at starting
+    e) Delete a task without delete the files
 
 

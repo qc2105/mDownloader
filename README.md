@@ -4,19 +4,19 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 
 # How to build
 
-##Under Windows:
+## Under Windows:
 
-###1. Tools that you will need
+### 1. Tools that you will need
 
 	a) Visual Studio Community 2013, download from http://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx or google this: vs2013.4_ce_enu.iso;
 	b) Qt 5.4.0 for Windows 32-bit (VS 2013), download from http://download.qt-project.org/official_releases/qt/5.4/5.4.0/qt-opensource-windows-x86-msvc2013-5.4.0.exe;
 
-###2. Build
+### 2. Build
 
 	a) Use Qt Creator to open mDownloader.pro
 	b) Press CTRL+R
 
-##Under Ubuntu 14.04 and above:
+## Under Ubuntu 14.04 and above:
 
  	a) sudo apt-get install qtcreator
 	b) Use Qt Creator to open mDownloader.pro and build

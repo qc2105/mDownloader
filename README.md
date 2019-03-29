@@ -34,6 +34,6 @@ N/A
     b) Interupted tasks can be recovered.
     c) Change the default save path accordingly when the filename changes
     d) Fix: when can't get file info, the task stucks at starting
-    e) Delete a task without delete the files
+    e) Delete a task without deleting the files
 
 

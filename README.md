@@ -28,12 +28,3 @@ All tests are under folder test. You'd better run the tests under Windows 7, bec
 # Latest official build 
 N/A
 
-# To Do
-    
-    a) Save information about a downloading task in a sqlite3 db until the user explicitly deletes it.
-    b) Interupted tasks can be recovered.
-    c) Change the default save path accordingly when the filename changes
-    d) Fix: when can't get file info, the task stucks at starting
-    e) Delete a task without delete the files
-
-

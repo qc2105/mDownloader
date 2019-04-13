@@ -41,6 +41,7 @@ NewTask::NewTask(QWidget *parent) :
     ui->setupUi(this);
 
     m_dir = QDir::toNativeSeparators(QDir::homePath());
+    m_tempFilePath = m_dir;
     ui->lineEditUrl->setText(tr("Paste or input the URL of the file you want to download here."));
     ui->lineEditSaveLocation->setText(m_dir + QDir::separator() + ui->lineEditFileName->text());
     ui->spinBoxThreadNum->setMinimum(1);
@@ -60,7 +61,11 @@ void NewTask::showMyself(void)
 
 void NewTask::on_buttonBoxWhetherOk_accepted()
 {
-    if (QUrl(ui->lineEditUrl->text()).isValid() && QUrl(ui->lineEditFileName->text()).isValid())
+    if (QUrl(ui->lineEditTempFilePath->text()).isValid())
+    {
+        emit resumeJob(ui->lineEditTempFilePath->text());
+    }
+    else if (QUrl(ui->lineEditUrl->text()).isValid() && QUrl(ui->lineEditFileName->text()).isValid())
     {
         emit setDownloadedDirectory(m_dir);
         emit setFileName(ui->lineEditFileName->text());
@@ -87,7 +92,8 @@ void NewTask::on_pushButtonSetSaveLocation_clicked()
     ui->lineEditSaveLocation->setText(QDir::toNativeSeparators(m_dir + QDir::separator() + ui->lineEditFileName->text()));
 }
 
-
-
-
-
+void NewTask::on_pushButtonSetTempFile_clicked()
+{
+    m_tempFilePath = QFileDialog::getOpenFileName(this, tr("Open mg! Temp File"), QDir::homePath(), tr("TempFile (*.mg!)"), Q_NULLPTR, QFileDialog::DontResolveSymlinks);
+    ui->lineEditTempFilePath->setText(QDir::toNativeSeparators(m_tempFilePath));
+}

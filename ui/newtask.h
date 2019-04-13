@@ -45,16 +45,18 @@ private slots:
     void on_buttonBoxWhetherOk_accepted();
     void on_pushButtonSetSaveLocation_clicked();
     void setFileNameSlot(QString);
-
+    void on_pushButtonSetTempFile_clicked();
 
 private:
     Ui::NewTask *ui;
     QString m_dir;
     QString m_localFileName;
+    QString m_tempFilePath;
 
 
 signals:
     void newJob(QString fileName, QString DownloadedDirectory, QString URL, int threadNum);
+    void resumeJob(QString tempFilePath);
     void runDownloader(QString);
     void setFileName(QString);
     void setSaveLocation(QString);

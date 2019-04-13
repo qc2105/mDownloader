@@ -157,7 +157,7 @@ Downloader::init_threads_from_mg(void)
     QFile *tempFile = NULL;
     QByteArray readData;
     int i;
-    int blockSize = 0;
+    const int blockSize = 100; // todo: move to the right place;
     QString error;
 
 
@@ -175,11 +175,17 @@ Downloader::init_threads_from_mg(void)
     }
 
     qDebug() << "File size immediately after open: " << tempFile->size() << endl;
-    qDebug() << "task.get_file_size() " << task.get_file_size() << endl;
 
     const int max_url_length = 1000; // TODO: move this sentence to the right place.
 
-    int nextReadPos = task.get_file_size();
+    readData.clear();
+    qDebug() << QString("\n").toUtf8().size() + blockSize << endl;
+    tempFile->seek(tempFile->size() - QString("\n").toUtf8().size() - blockSize);
+    readData.clear();
+    readData = tempFile->read(blockSize);
+    qint64 fileDataSize = readData.toLongLong();
+    qDebug() << "fileDataSize: " << fileDataSize << endl;
+    int nextReadPos = fileDataSize;
 
     tempFile->seek(nextReadPos);
     readData.clear();
@@ -187,13 +193,12 @@ Downloader::init_threads_from_mg(void)
     QString readURL = QString::fromUtf8(readData);
     qDebug() << "Read additional size: " << readURL.size() << endl;
     qDebug() << "Read url: " << readURL << endl;
+    task.set_url(readURL.toStdString().c_str());
     readData.clear();
 
     nextReadPos += max_url_length;
     tempFile->seek(nextReadPos);
 
-    readData.setNum(task.get_file_size());
-    blockSize = readData.size();
 
     readData = tempFile->read(blockSize);
     threadNum = readData.toInt();
@@ -497,7 +502,7 @@ Downloader::save_temp_file_exit(void)
     int i;
     QFile *tempFile;
     QByteArray writeData;
-    int blockSize = 0;
+    const int blockSize = 100; // todo: move to the right place
     QString error;
 
 
@@ -544,8 +549,7 @@ Downloader::save_temp_file_exit(void)
     nextWritePos += max_url_length;
 
     tempFile->seek(nextWritePos);
-    writeData.setNum(task.get_file_size());
-    blockSize = writeData.size();
+
     writeData.clear();
     writeData.setNum(threadNum);
     tempFile->write(writeData);
@@ -575,6 +579,18 @@ Downloader::save_temp_file_exit(void)
         nextWritePos += blockSize;
         tempFile->seek(nextWritePos);
     }
+
+    writeData.setNum(task.get_file_size());
+    tempFile->write(writeData);
+    qDebug() << "Write fileDataSize: " << writeData.toLongLong() << endl;
+    writeData.clear();
+    nextWritePos += blockSize;
+    tempFile->seek(nextWritePos);
+    writeData = QString("\n").toUtf8();
+    write_size = tempFile->write(writeData);
+    qDebug() << "write \n size: " << write_size << endl;
+    writeData.clear();
+
     tempFile->close();
     delete tempFile;
 
@@ -904,6 +920,19 @@ Downloader::runMyself(QString QUrl)
     }
     setState(Status::Starting);
     start();
+}
+
+void
+Downloader::resumeMyself(QString tempFilePath)
+{
+    init_local_file_name();
+    if (!tempFilePath.isEmpty())
+    {
+        init_threads_from_mg();
+    }else {
+        qCritical() << "runMyself: tempFilePath is empty!" << endl;
+    }
+    runMyself(task.get_url());
 }
 
 void

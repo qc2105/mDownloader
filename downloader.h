@@ -58,8 +58,11 @@ class Downloader: public QThread
 
         QString getTotalSize() const { return toTalSize;}
 
+        Task task;
+
     public slots:
         void runMyself(QString);
+        void resumeMyself(QString);
         void resumeTask(void);
         void setLocalDirectory(QString);
         void setLocalFileName(QString);
@@ -110,8 +113,9 @@ class Downloader: public QThread
         int post_download_process(double download_start_time);
 
 
+
 	private:
-        Task task;
+
 		Plugin *plugin;
 		char *localPath;
 		char *localMg;

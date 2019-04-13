@@ -1,0 +1,3 @@
+2019-04-13
+1. Can recover previously unfinished tasks from .mg! temp files.
+   Download Url, Number of threads, etc. are embedded in .mg! files.

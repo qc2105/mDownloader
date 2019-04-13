@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Create common actions
     QAction *newJobAction = new QAction(QIcon(":/ui/icons/bottom.png"), tr("Add &new job"), this);
+    resuMeJobAction = new QAction(QIcon(":/ui/icons/bottom.png"), tr("&Resume job"), this);
     pauseJobAction = new QAction(QIcon(":/ui/icons/player_pause.png"), tr("&Pause job"), this);
     removeJobAction = new QAction(QIcon(":/ui/icons/player_stop.png"), tr("&Remove job"), this);
     openDirAction = new QAction(QIcon(":/ui/icons/folder.png"), tr("Open file &directory"), this);
@@ -89,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // File menu
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(newJobAction);
+    fileMenu->addAction(resuMeJobAction);
     fileMenu->addAction(pauseJobAction);
     fileMenu->addAction(removeJobAction);
     fileMenu->addAction(openDirAction);
@@ -104,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addToolBar(Qt::TopToolBarArea, topBar);
     topBar->setMovable(false);
     topBar->addAction(newJobAction);
+    topBar->addAction(resuMeJobAction);
     topBar->addAction(pauseJobAction);
     topBar->addAction(removeJobAction);
     topBar->addAction(openDirAction);
@@ -116,6 +119,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(setActionsEnabled()));
     connect(newJobAction, SIGNAL(triggered()),
             this, SLOT(addJob()));
+    connect(resuMeJobAction, SIGNAL(triggered()),
+            this, SLOT(resuMeJob()));
     connect(pauseJobAction, SIGNAL(triggered()),
             this, SLOT(pauseJob()));
     connect(removeJobAction, SIGNAL(triggered()),
@@ -199,6 +204,88 @@ bool MainWindow::addJob()
             this, SLOT(addJob(QString,QString,QString,int)));
     newTask->show();
     return true;
+}
+
+void MainWindow::resuMeJob()
+{
+    NewTask *newTask = new NewTask(this);
+
+    connect(newTask, SIGNAL(resumeJob(QString)),
+            this, SLOT(resuMeJob(QString)));
+    newTask->show();
+}
+
+void MainWindow::resuMeJob(QString tempFilePath)
+{
+    QString DownDir = tempFilePath;
+    DownDir.chop(tempFilePath.size() - tempFilePath.lastIndexOf(QChar('/')));
+
+    QString fileName = tempFilePath.right(tempFilePath.size() - tempFilePath.lastIndexOf(QChar('/')) -1);
+    fileName.chop(strlen(".mg!"));
+
+    // Check if the job is already being downloaded.
+    foreach(Job job, jobs)
+    {
+        if (job.tempFilePath == tempFilePath)
+        {
+            QMessageBox::warning(this, tr("Already downloading"),
+                                 tr("The file %1 is already being downloaded.")
+                                 .arg(fileName));
+            return;
+        }
+    }
+
+    qDebug() << DownDir << "ttt" << fileName << endl;
+
+    //Create a new downloader
+    Downloader *downloader = new Downloader(this);
+//    qDebug() << tempFilePath.toStdString().c_str() << endl;
+//    downloader->task.set_local_dir(DownDir.toStdString().c_str());
+
+
+
+    downloader->setLocalFileName(fileName);
+    downloader->setLocalDirectory(DownDir);
+//    downloader->setThreadNum(threadNUM);
+
+    // Setup the downlader connections
+    connect(downloader, SIGNAL(stateChanged(QString)),
+            this, SLOT(updateState(QString)));
+    connect(downloader, SIGNAL(set_GuiProgressBarValue(int)),
+            this, SLOT(updateProgress(int)));
+    connect(downloader, SIGNAL(set_GuiLabelSpeed(QString)),
+            this, SLOT(updateDownloadRate(QString)));
+    connect(downloader, SIGNAL(set_GuiLabelDownloaded(QString)),
+            this, SLOT(updateDownloaded(QString)));
+    connect(downloader, SIGNAL(set_GuiLabelRemainingTime(QString)),
+            this, SLOT(updateRemainingTime(QString)));
+    connect(downloader, SIGNAL(errorHappened(QString)), this, SLOT(on_error_happens(QString)));
+
+
+    // Add the downloader to the list of downloading jobs.
+    Job job;
+    job.downloader = downloader;
+    job.fileName = fileName;
+    job.destinationDir = DownDir;
+    jobs << job;
+
+    // Create and add a row in the job view for this download.
+    QTreeWidgetItem *item = new QTreeWidgetItem(jobView);
+
+    QString baseFileName = QFileInfo(fileName).baseName();
+
+    item->setText(0, baseFileName);
+    item->setToolTip(0, tr("File: %1<br>Destination: %2")
+                     .arg(baseFileName).arg(DownDir));
+    item->setText(1, tr("0/0"));
+    item->setText(2, "0");
+    item->setText(3, "0.0 KB/s");
+    item->setText(4, tr("Idle"));
+    item->setText(5, "--:--");
+    item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    item->setTextAlignment(1, Qt::AlignHCenter);
+
+    downloader->resumeMyself(tempFilePath);
 }
 
 void MainWindow::addJob(QString fileName, QString DownDir, QString URL, int threadNUM)

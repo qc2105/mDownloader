@@ -58,6 +58,7 @@ public slots:
     void set_newJobFileName(QString);
     void set_newJobDownloadedDirectory(QString);
     void addJob(QString fileName, QString DownDir, QString URL, int threadNUM);
+    void resuMeJob(QString tempFilePath);
 
 private slots:
     virtual void closeEvent(QCloseEvent *);
@@ -68,6 +69,7 @@ private slots:
 
     // First version multi-jobs UI
     bool addJob();
+    void resuMeJob();
     void removeJob();
     void pauseJob();
     void openDir();
@@ -99,9 +101,11 @@ private:
     QAction *pauseJobAction;
     QAction *removeJobAction;
     QAction *openDirAction;
+    QAction *resuMeJobAction;
 
     struct Job {
         QString fileName;
+        QString tempFilePath;
         QString destinationDir;
         QString url;
         int threadNum;

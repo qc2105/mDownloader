@@ -163,13 +163,6 @@ Downloader::init_threads_from_mg(void)
 
     m_status->setDownloadMode(Status::ResumeDownload);
 
-    readData.clear();
-
-    readData.setNum(task.get_file_size());
-    blockSize = readData.size();
-
-    readData.clear();
-
     tempFile = new QFile(localMg);
 
     if (!tempFile->open(QIODevice::ReadOnly)) {
@@ -182,14 +175,34 @@ Downloader::init_threads_from_mg(void)
     }
 
     qDebug() << "File size immediately after open: " << tempFile->size() << endl;
+    qDebug() << "task.get_file_size() " << task.get_file_size() << endl;
 
-    tempFile->seek(task.get_file_size());
+    const int max_url_length = 1000; // TODO: move this sentence to the right place.
+
+    int nextReadPos = task.get_file_size();
+
+    tempFile->seek(nextReadPos);
+    readData.clear();
+    readData = tempFile->read(max_url_length);
+    QString readURL = QString::fromUtf8(readData);
+    qDebug() << "Read additional size: " << readURL.size() << endl;
+    qDebug() << "Read url: " << readURL << endl;
+    readData.clear();
+
+    nextReadPos += max_url_length;
+    tempFile->seek(nextReadPos);
+
+    readData.setNum(task.get_file_size());
+    blockSize = readData.size();
+
     readData = tempFile->read(blockSize);
     threadNum = readData.toInt();
     readData.clear();
 
     qDebug() << "File size: " << tempFile->size()<< endl;
     qDebug() << "threadNum: " << threadNum << endl;
+
+    nextReadPos += blockSize;
 
     // TODO: We'd better use a hash function to check.
     if(tempFile->size() < task.get_file_size() + 3 * blockSize * threadNum) {
@@ -207,20 +220,23 @@ Downloader::init_threads_from_mg(void)
     delete[] blocks;
     blocks = new Block[threadNum];
     for(i = 0; i < threadNum; i ++){
-        tempFile->seek(task.get_file_size() + (threadNum*i+1) * blockSize);
         readData = tempFile->read(blockSize);
         blocks[i].startPoint = readData.toLong();
         readData.clear();
         qDebug() << "startPoint for thread " << i << ": " << blocks[i].startPoint << endl;
-        tempFile->seek(task.get_file_size() + (threadNum*i+2) * blockSize);
+        nextReadPos += blockSize;
+        tempFile->seek(nextReadPos);
         readData = tempFile->read(blockSize);
         blocks[i].downloaded = readData.toLong();
         readData.clear();
         qDebug() << "downloaded for thread " << i << ": " << blocks[i].downloaded << endl;
-        tempFile->seek(task.get_file_size() + (threadNum*i+3) * blockSize);
+        nextReadPos += blockSize;
+        tempFile->seek(nextReadPos);
         readData = tempFile->read(blockSize);
         blocks[i].size = readData.toLong();
         readData.clear();
+        nextReadPos += blockSize;
+        tempFile->seek(nextReadPos);
         qDebug() << "size for thread " << i << ": " << blocks[i].size << endl;
         if(!(blocks[i].bufferFile.open(localMg))){
             tempFile->close();
@@ -484,13 +500,7 @@ Downloader::save_temp_file_exit(void)
     int blockSize = 0;
     QString error;
 
-    writeData.clear();
 
-    writeData.setNum(task.get_file_size());
-
-    blockSize = writeData.size();
-
-    writeData.clear();
 
     for(i = 0; i < threadNum; i ++){
         if(blocks[i].state != JOINED){
@@ -518,26 +528,52 @@ Downloader::save_temp_file_exit(void)
         return -1;
     }
 
-    tempFile->seek(task.get_file_size());
+    int nextWritePos = task.get_file_size();
+
+    tempFile->seek(nextWritePos);
+
+    writeData.clear();
+    writeData = QString(task.get_url()).toUtf8();
+    int write_size = tempFile->write(writeData);
+    qDebug() << "write additional size: " << write_size << endl;
+    qDebug() << "Write url: " << QString::fromUtf8(writeData) << endl;
+    writeData.clear();
+
+    const int max_url_length = 1000; // TODO: move this statement to the right place.
+
+    nextWritePos += max_url_length;
+
+    tempFile->seek(nextWritePos);
+    writeData.setNum(task.get_file_size());
+    blockSize = writeData.size();
+    writeData.clear();
     writeData.setNum(threadNum);
     tempFile->write(writeData);
+    qDebug() << "Write threadNum: " << writeData.toInt() << endl;
     writeData.clear();
+
+    nextWritePos += blockSize;
+    tempFile->seek(nextWritePos);
+
     for(i = 0; i < threadNum; i++){
-        tempFile->seek(task.get_file_size() + (threadNum*i+1) * blockSize);
         writeData.setNum(blocks[i].startPoint);
         tempFile->write(writeData);
         writeData.clear();
         qDebug() << "Write startPoint for thread " << i << ": " << blocks[i].startPoint << endl;
-        tempFile->seek(task.get_file_size() + (threadNum*i+2) * blockSize);
+        nextWritePos += blockSize;
+        tempFile->seek(nextWritePos);
         writeData.setNum(blocks[i].downloaded);
         tempFile->write(writeData);
         writeData.clear();
         qDebug() << "Write downloaded for thread " << i << ": " << blocks[i].downloaded << endl;
-        tempFile->seek(task.get_file_size() + (threadNum*i+3) * blockSize);
+        nextWritePos += blockSize;
+        tempFile->seek(nextWritePos);
         writeData.setNum(blocks[i].size);
         tempFile->write(writeData);
         writeData.clear();
         qDebug() << "Write size for thread " << i << ": " << blocks[i].size << endl;
+        nextWritePos += blockSize;
+        tempFile->seek(nextWritePos);
     }
     tempFile->close();
     delete tempFile;

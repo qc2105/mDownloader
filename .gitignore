@@ -13,3 +13,4 @@ Makefile
 *-Debug/
 *.stash
 .vscode/
+moc*.h

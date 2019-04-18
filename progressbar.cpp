@@ -28,6 +28,8 @@
 #include <sys/types.h>
 #include <signal.h>
 
+#include <QDebug>
+
 #include "progressbar.h"
 #include "utils.h"
 
@@ -275,15 +277,7 @@ ProgressBar::update(qint64 *data)
 		graph[graphWidth] = '\0';
 	}
 
-	if(!show){
-		// if can not use ^M to reach the begining of the current line 
-		// just show the data line by line
-        fprintf(stderr, "\n%3ld%% [%s] [%s] [%s/s] [ETA:%s]",
-				percent, graph, downloaded, downloadRate, eta);
-	}else{
-        fprintf(stderr, "\r%3ld%% [%s] [%s] [%s/s] [ETA:%s]",
-				percent, graph, downloaded, downloadRate, eta);
-	}
+    qDebug() << percent << graph << downloaded << downloadRate << eta << '\n';
 
 	lastTime = curr_time;
 	lastDownloaded = curr_downloaded;

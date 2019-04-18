@@ -218,9 +218,9 @@ void MainWindow::resuMeJob()
 void MainWindow::resuMeJob(QString tempFilePath)
 {
     QString DownDir = tempFilePath;
-    DownDir.chop(tempFilePath.size() - tempFilePath.lastIndexOf(QChar('/')));
+    DownDir.chop(tempFilePath.size() - tempFilePath.lastIndexOf(QDir::separator()));
 
-    QString fileName = tempFilePath.right(tempFilePath.size() - tempFilePath.lastIndexOf(QChar('/')) -1);
+    QString fileName = tempFilePath.right(tempFilePath.size() - tempFilePath.lastIndexOf(QDir::separator()) -1);
     fileName.chop(strlen(".mg!"));
 
     // Check if the job is already being downloaded.
@@ -237,16 +237,10 @@ void MainWindow::resuMeJob(QString tempFilePath)
 
     qDebug() << DownDir << "ttt" << fileName << endl;
 
-    //Create a new downloader
     Downloader *downloader = new Downloader(this);
-//    qDebug() << tempFilePath.toStdString().c_str() << endl;
-//    downloader->task.set_local_dir(DownDir.toStdString().c_str());
-
-
 
     downloader->setLocalFileName(fileName);
     downloader->setLocalDirectory(DownDir);
-//    downloader->setThreadNum(threadNUM);
 
     // Setup the downlader connections
     connect(downloader, SIGNAL(stateChanged(QString)),
@@ -495,7 +489,7 @@ void MainWindow::about()
     QString about;
     about = tr("mDownloader: A GUI download accelerator.");
     about += QChar::LineSeparator;
-    about += tr("Version: 1.1.0Build001.");
+    about += tr("Version: 1.1.1Build001.");
     about += QChar::LineSeparator;
     about += tr("Written by Chuan Qin. Email: qc2105@qq.com");
     about += QChar::LineSeparator;

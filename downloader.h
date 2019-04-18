@@ -115,7 +115,8 @@ class Downloader: public QThread
 
 
 	private:
-
+        const int max_url_length = 1000;
+        const int blockSize = 100;
 		Plugin *plugin;
 		char *localPath;
 		char *localMg;

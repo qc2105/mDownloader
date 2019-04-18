@@ -157,7 +157,6 @@ Downloader::init_threads_from_mg(void)
     QFile *tempFile = NULL;
     QByteArray readData;
     int i;
-    const int blockSize = 100; // todo: move to the right place;
     QString error;
 
 
@@ -175,8 +174,6 @@ Downloader::init_threads_from_mg(void)
     }
 
     qDebug() << "File size immediately after open: " << tempFile->size() << endl;
-
-    const int max_url_length = 1000; // TODO: move this sentence to the right place.
 
     readData.clear();
     qDebug() << QString("\n").toUtf8().size() + blockSize << endl;
@@ -502,10 +499,7 @@ Downloader::save_temp_file_exit(void)
     int i;
     QFile *tempFile;
     QByteArray writeData;
-    const int blockSize = 100; // todo: move to the right place
     QString error;
-
-
 
     for(i = 0; i < threadNum; i ++){
         if(blocks[i].state != JOINED){

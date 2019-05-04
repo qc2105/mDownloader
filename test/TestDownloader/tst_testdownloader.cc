@@ -6,10 +6,10 @@
 #include "hashworker.h"
 
 
-#define TEST_HASH "9ab9f1c24973f4fa5b3cebb968172169"
-#define TEST_URL "192.168.1.211/uploads/test"
-#define TEMP_FILE "test.test"
-#define REPEAT_TIMES 5
+#define TEST_HASH "86d14c0b3d33a8d5a1ae87b55402a6f0"
+#define TEST_URL "localhost:8000/test.test"
+#define TEMP_FILE "test.tmp"
+#define REPEAT_TIMES 1
 
 class TestDownloader : public QObject
 {
@@ -82,7 +82,7 @@ void TestDownloader::testDownloader_data()
     QString http_qstr = QString("http://") + QString(TEST_URL);
     QString ftp_qstr = QString("ftp://") + QString(TEST_URL);
 
-    for(int i = 1; i < REPEAT_TIMES; i++)
+    for(int i = 0; i < REPEAT_TIMES; i++)
     {
         QString nThreads;
         nThreads.setNum(i);
@@ -91,9 +91,9 @@ void TestDownloader::testDownloader_data()
         QString http_string = QString("http_") + nThreads + QString("_thread");
         QString ftp_string = QString("ftp_") + nThreads + QString("_thread");
 
-        QTest::newRow(https_string.toStdString().c_str()) << https_qstr    << nThreads  << TEST_HASH;
+//        QTest::newRow(https_string.toStdString().c_str()) << https_qstr    << nThreads  << TEST_HASH;
         QTest::newRow(http_string.toStdString().c_str()) << http_qstr     << nThreads  << TEST_HASH;
-        QTest::newRow(ftp_string.toStdString().c_str()) << ftp_qstr      << nThreads  << TEST_HASH;
+//        QTest::newRow(ftp_string.toStdString().c_str()) << ftp_qstr      << nThreads  << TEST_HASH;
     }
 }
 

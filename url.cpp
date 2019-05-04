@@ -30,6 +30,8 @@
 #include "utils.h"
 #include "header.h"
 
+#include <QDebug>
+
 using namespace std;
 
 /* the relative RFC documents are RFC1738, RFC1808, RFC2396, RFC2732 */
@@ -438,6 +440,7 @@ URL::_parse(const char *url_orig)
 	char *url_parsed;
 	char buf[1024];
 
+    qDebug() << "url_orig: " << url_orig << endl;
 	url = pre_encode(url_orig);
 	snprintf(buf, 1024, "%s", url);
 	url_parsed = buf;

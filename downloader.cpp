@@ -462,17 +462,6 @@ Downloader::remove_temp_file_exit(void)
 {
     int i;
     QFile *tempFile;
-    QByteArray writeData;
-    int blockSize = 0;
-    QString error;
-
-    writeData.clear();
-
-    writeData.setNum(task.get_file_size());
-
-    blockSize = writeData.size();
-
-    writeData.clear();
 
     for(i = 0; i < threadNum; i ++){
         if(blocks[i].state != JOINED){
@@ -483,7 +472,6 @@ Downloader::remove_temp_file_exit(void)
             blocks[i].state = STOP;
         }
     };
-
 
     tempFile = new QFile(localMg);
 
@@ -537,8 +525,6 @@ Downloader::save_temp_file_exit(void)
     qDebug() << "write additional size: " << write_size << endl;
     qDebug() << "Write url: " << QString::fromUtf8(writeData) << endl;
     writeData.clear();
-
-    const int max_url_length = 1000; // TODO: move this statement to the right place.
 
     nextWritePos += max_url_length;
 

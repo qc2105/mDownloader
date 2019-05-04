@@ -32,7 +32,6 @@
 #include "advio.h"
 #include "header.h"
 #include "macro.h"
-		
 
 class Http
 	: public PluginIO

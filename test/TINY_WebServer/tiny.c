@@ -148,8 +148,9 @@ void serve_static(int fd, char *filename, int filesize)
     get_filetype(filename, filetype);       //line:netp:servestatic:getfiletype
     sprintf(buf, "HTTP/1.0 200 OK\r\n");    //line:netp:servestatic:beginserve
     sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);
-    sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
-    sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
+    sprintf(buf, "%sContent-Length: %d\r\n", buf, filesize);
+    printf("Content-length: %d\r\n",  filesize );
+    sprintf(buf, "%sContent-Type: %s\r\n\r\n", buf, filetype);
     Rio_writen(fd, buf, strlen(buf));       //line:netp:servestatic:endserve
 
     /* Send response body to client */

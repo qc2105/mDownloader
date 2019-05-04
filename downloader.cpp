@@ -151,6 +151,7 @@ Downloader::init_local_file_name(void)
     return 0;
 }
 
+// please take a look at save_temp_file_exit() to get more details
 int
 Downloader::init_threads_from_mg(void)
 {
@@ -175,6 +176,7 @@ Downloader::init_threads_from_mg(void)
 
     qDebug() << "File size immediately after open: " << tempFile->size() << endl;
 
+    // get the length of data in mg! file.
     readData.clear();
     qDebug() << QString("\n").toUtf8().size() + blockSize << endl;
     tempFile->seek(tempFile->size() - QString("\n").toUtf8().size() - blockSize);
@@ -184,6 +186,7 @@ Downloader::init_threads_from_mg(void)
     qDebug() << "fileDataSize: " << fileDataSize << endl;
     int nextReadPos = fileDataSize;
 
+    // get the url
     tempFile->seek(nextReadPos);
     readData.clear();
     readData = tempFile->read(max_url_length);
@@ -196,7 +199,7 @@ Downloader::init_threads_from_mg(void)
     nextReadPos += max_url_length;
     tempFile->seek(nextReadPos);
 
-
+    // get the number of threads
     readData = tempFile->read(blockSize);
     threadNum = readData.toInt();
     readData.clear();
@@ -218,7 +221,7 @@ Downloader::init_threads_from_mg(void)
         return -1;
     }
 
-
+    // get the data
     delete[] blocks;
     blocks = new Block[threadNum];
     for(i = 0; i < threadNum; i ++){
@@ -250,7 +253,7 @@ Downloader::init_threads_from_mg(void)
     }
 
     tempFile->close();
-    delete tempFile;
+    delete tempFile;    // don't panic, we only delete the QFile object here not the tempFile itself.
     return 0;
 }
 
@@ -519,6 +522,7 @@ Downloader::save_temp_file_exit(void)
 
     tempFile->seek(nextWritePos);
 
+    // save url
     writeData.clear();
     writeData = QString(task.get_url()).toUtf8();
     int write_size = tempFile->write(writeData);
@@ -530,6 +534,7 @@ Downloader::save_temp_file_exit(void)
 
     tempFile->seek(nextWritePos);
 
+    // save number of threads
     writeData.clear();
     writeData.setNum(threadNum);
     tempFile->write(writeData);
@@ -539,6 +544,7 @@ Downloader::save_temp_file_exit(void)
     nextWritePos += blockSize;
     tempFile->seek(nextWritePos);
 
+    // save data
     for(i = 0; i < threadNum; i++){
         writeData.setNum(blocks[i].startPoint);
         tempFile->write(writeData);
@@ -560,12 +566,19 @@ Downloader::save_temp_file_exit(void)
         tempFile->seek(nextWritePos);
     }
 
+    // save size of data in file
     writeData.setNum(task.get_file_size());
     tempFile->write(writeData);
     qDebug() << "Write fileDataSize: " << writeData.toLongLong() << endl;
     writeData.clear();
     nextWritePos += blockSize;
     tempFile->seek(nextWritePos);
+
+    /* save the "marker of the end of a file chunk"
+     * we do this because this can make sure we save the fileDataSize above in a fixed length block(its size is blockSize).
+     * the marker's size is also fixed, it is QString("\n").toUtf8().size().
+     * all these will make the work in init_threads_from_mg() a little easier
+     */
     writeData = QString("\n").toUtf8();
     write_size = tempFile->write(writeData);
     qDebug() << "write \n size: " << write_size << endl;

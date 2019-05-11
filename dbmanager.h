@@ -2,6 +2,7 @@
 #define DBMANAGER_H
 
 #include <QSqlDatabase>
+#include <QStringList>
 
 /**
  * \class DbManager
@@ -14,13 +15,14 @@
 class DbManager
 {
 public:
+    DbManager();
     /**
      * @brief Constructor
      *
      * Constructor sets up connection with db and opens it
      * @param path - absolute path to db file
      */
-    DbManager(const QString& path);
+    DbManager(const QString &path);
 
     /**
      * @brief Destructor
@@ -31,43 +33,19 @@ public:
 
     bool isOpen() const;
 
-    /**
-     * @brief Creates a new 'people' table if it doesn't already exist
-     * @return true - 'people' table created successfully, false - table not created
-     */
     bool createTable();
 
-    /**
-     * @brief Add person data to db
-     * @param name - name of person to add
-     * @return true - person added successfully, false - person not added
-     */
-    bool addPerson(const QString& name);
+    bool addTask(const QString &mg_file_path);
 
-    /**
-     * @brief Remove person data from db
-     * @param name - name of person to remove.
-     * @return true - person removed successfully, false - person not removed
-     */
-    bool removePerson(const QString& name);
+    bool removeTask(const QString &mg_file_path);
 
-    /**
-     * @brief Check if person of name "name" exists in db
-     * @param name - name of person to check.
-     * @return true - person exists, false - person does not exist
-     */
-    bool personExists(const QString& name) const;
+    bool taskExists(const QString &mg_file_path) const;
 
-    /**
-     * @brief Print names of all persons in db
-     */
-    void printAllPersons() const;
+    void printAllTasks() const;
 
-    /**
-     * @brief Remove all persons from db
-     * @return true - all persons removed successfully, false - not removed
-     */
-    bool removeAllPersons();
+    QStringList getAllPaths();
+
+    bool removeALLTasks();
 
 private:
     QSqlDatabase m_db;

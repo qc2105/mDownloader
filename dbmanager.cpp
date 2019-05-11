@@ -4,6 +4,11 @@
 #include <QSqlRecord>
 #include <QDebug>
 
+DbManager::DbManager()
+{
+    ;
+}
+
 DbManager::DbManager(const QString &path)
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE");
@@ -25,6 +30,7 @@ DbManager::~DbManager()
     {
         m_db.close();
     }
+    QSqlDatabase::removeDatabase("qt_sql_default_connection");
 }
 
 bool DbManager::isOpen() const
@@ -37,26 +43,26 @@ bool DbManager::createTable()
     bool success = false;
 
     QSqlQuery query;
-    query.prepare("CREATE TABLE people(id INTEGER PRIMARY KEY, name TEXT);");
+    query.prepare("CREATE TABLE task(id INTEGER PRIMARY KEY, mg_file_path TEXT);");
 
     if (!query.exec())
     {
-        qDebug() << "Couldn't create the table 'people': one might already exist.";
+        qDebug() << "Couldn't create the table 'mg_file_path': one might already exist.";
         success = false;
     }
 
     return success;
 }
 
-bool DbManager::addPerson(const QString& name)
+bool DbManager::addTask(const QString& mg_file_path)
 {
     bool success = false;
 
-    if (!name.isEmpty())
+    if (!mg_file_path.isEmpty())
     {
         QSqlQuery queryAdd;
-        queryAdd.prepare("INSERT INTO people (name) VALUES (:name)");
-        queryAdd.bindValue(":name", name);
+        queryAdd.prepare("INSERT INTO task (mg_file_path) VALUES (:mg_file_path)");
+        queryAdd.bindValue(":mg_file_path", mg_file_path);
 
         if(queryAdd.exec())
         {
@@ -64,46 +70,46 @@ bool DbManager::addPerson(const QString& name)
         }
         else
         {
-            qDebug() << "add person failed: " << queryAdd.lastError();
+            qDebug() << "add task failed: " << queryAdd.lastError();
         }
     }
     else
     {
-        qDebug() << "add person failed: name cannot be empty";
+        qDebug() << "add task failed: mg_file_path cannot be empty";
     }
 
     return success;
 }
 
-bool DbManager::removePerson(const QString& name)
+bool DbManager::removeTask(const QString& mg_file_path)
 {
     bool success = false;
 
-    if (personExists(name))
+    if (taskExists(mg_file_path))
     {
         QSqlQuery queryDelete;
-        queryDelete.prepare("DELETE FROM people WHERE name = (:name)");
-        queryDelete.bindValue(":name", name);
+        queryDelete.prepare("DELETE FROM task WHERE mg_file_path = (:mg_file_path)");
+        queryDelete.bindValue(":mg_file_path", mg_file_path);
         success = queryDelete.exec();
 
         if(!success)
         {
-            qDebug() << "remove person failed: " << queryDelete.lastError();
+            qDebug() << "remove task failed: " << queryDelete.lastError();
         }
     }
     else
     {
-        qDebug() << "remove person failed: person doesnt exist";
+        qDebug() << "remove task failed: task doesn't exist";
     }
 
     return success;
 }
 
-void DbManager::printAllPersons() const
+void DbManager::printAllTasks() const
 {
-    qDebug() << "Persons in db:";
-    QSqlQuery query("SELECT * FROM people");
-    int idName = query.record().indexOf("name");
+    qDebug() << "Tasks in db:";
+    QSqlQuery query("SELECT * FROM task");
+    int idName = query.record().indexOf("mg_file_path");
     while (query.next())
     {
         QString name = query.value(idName).toString();
@@ -111,13 +117,28 @@ void DbManager::printAllPersons() const
     }
 }
 
-bool DbManager::personExists(const QString& name) const
+QStringList DbManager::getAllPaths()
+{
+    QStringList paths;
+    QSqlQuery query("SELECT * FROM task");
+    int idName = query.record().indexOf("mg_file_path");
+    while (query.next())
+    {
+        QString name = query.value(idName).toString();
+        qDebug() << "===" << name;
+        paths.append(name);
+    }
+
+    return paths;
+}
+
+bool DbManager::taskExists(const QString& mg_file_path) const
 {
     bool exists = false;
 
     QSqlQuery checkQuery;
-    checkQuery.prepare("SELECT name FROM people WHERE name = (:name)");
-    checkQuery.bindValue(":name", name);
+    checkQuery.prepare("SELECT mg_file_path FROM task WHERE mg_file_path = (:mg_file_path)");
+    checkQuery.bindValue(":mg_file_path", mg_file_path);
 
     if (checkQuery.exec())
     {
@@ -128,18 +149,18 @@ bool DbManager::personExists(const QString& name) const
     }
     else
     {
-        qDebug() << "person exists failed: " << checkQuery.lastError();
+        qDebug() << "task exists failed: " << checkQuery.lastError();
     }
 
     return exists;
 }
 
-bool DbManager::removeAllPersons()
+bool DbManager::removeALLTasks()
 {
     bool success = false;
 
     QSqlQuery removeQuery;
-    removeQuery.prepare("DELETE FROM people");
+    removeQuery.prepare("DELETE FROM task");
 
     if (removeQuery.exec())
     {
@@ -147,7 +168,7 @@ bool DbManager::removeAllPersons()
     }
     else
     {
-        qDebug() << "remove all persons failed: " << removeQuery.lastError();
+        qDebug() << "remove all tasks failed: " << removeQuery.lastError();
     }
 
     return success;

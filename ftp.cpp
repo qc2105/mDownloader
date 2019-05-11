@@ -237,7 +237,7 @@ Ftp::rest(qint64 offset)
 	if(offset < 0) return -1;
 	char buffer[64];
 
-    snprintf(buffer, 64, "%ld", offset);
+    snprintf(buffer, 64, "%lld", offset);
 	ret = ftp_cmd("REST", buffer);
 	switch(ret){
 		case 350:

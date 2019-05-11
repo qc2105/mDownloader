@@ -65,7 +65,7 @@ const static proto_struct protocol_table[] = {
     {"https://", HTTPS, 443, true},
 	{"mms://", MMS, 1755, false},
 	{"rtsp://", RTSP, 554, false},
-	{NULL, NONE, 0, false}
+	{"\0", NONE, 0, false}
 };
 
 enum {

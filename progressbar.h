@@ -34,6 +34,15 @@
 #define MAXIMUM_SCREEN_WIDTH 256 //the maximum screen width
 #define DIRTY_WIDTH 35
 
+/*
+ * percent : graph : already download : download rate : remain time
+ * 23% [=============>          =============>          ===>        ] [900M] [800K/s] [ETA:02:54]
+ */
+
+#define RIGHT 1
+#define LEFT 0
+
+
 class ProgressBar
 {
 	public:
@@ -51,17 +60,17 @@ class ProgressBar
         char *get_downloadRate(void);
         char *get_eta(void);
 
-        qint64 *data;
+        qint64 *data = NULL;
 
 	private:
         static void screen_width_change(int signo);
 		
 	private:
 		double lastTime; // the last time of update
-		qint64 lastDownloaded; // the total size of the already download part
-		qint64 totalSize; // the total size of the file in bytes
+		qint64 totalSize = 0; // the total size of the file in bytes
 		qint64 *startPoint; // save the start points
-		int blockNum; // blockNum
+		int blockNum = 0; // blockNum
+		qint64 lastDownloaded = 0; // the total size of the already download part
 		bool show; // can show or not
 
 		float rates[12];
@@ -75,7 +84,7 @@ class ProgressBar
 		char eta[6];
 		char graph[MAXIMUM_SCREEN_WIDTH - DIRTY_WIDTH + 1];
 		static int graphWidth;
-		int direction;
+		int direction = RIGHT;
 };
 
 #endif // _PROGRESSBAR_H

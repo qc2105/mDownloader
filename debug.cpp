@@ -34,7 +34,6 @@ void
 debug_log(const char *fmt, ...)
 {
 	va_list vp;
-	const char *end;
 
 	assert(fmt != NULL);
 	if(!global_debug) return;

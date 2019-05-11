@@ -47,6 +47,9 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
+    case QtInfoMsg:
+        debug_out << "[Info:] " << localMsg.constData() << "(" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
+        break;
     case QtDebugMsg:
         debug_out << "[Debug:] " << localMsg.constData() << "(" << context.file << ":" << context.line << ", " << context.function << ")" << endl;
         break;

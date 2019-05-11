@@ -150,9 +150,9 @@ Http::set_range(qint64 start, qint64 end)
 {
 
 	if(end < 0){
-        snprintf(buf, 1024, "bytes=%ld-", start);
+        snprintf(buf, 1024, "bytes=%lld-", start);
 	}else{
-        snprintf(buf, 1024, "bytes=%ld-%ld", start, end);
+        snprintf(buf, 1024, "bytes=%lld-%lld", start, end);
 	}
 
 	return request.set_attr("Range", buf);

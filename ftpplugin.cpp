@@ -208,7 +208,6 @@ FtpPlugin::recursive_get_dir_list(Task &task, Ftp *ftp, const char *tempfile,
 	char currdir[1024];
 	char file[1024];
 	const char *ptr;
-	bool is_dir;
 	int ret;
 	FtpParser fp;
 	qint64 filesize;

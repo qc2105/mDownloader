@@ -177,7 +177,7 @@ FtpParser::process_unix(char *line)
     static char MonthStr[][4] =
 	{ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-	  NULL};
+	  "\0"};
 
 	// permission
 	line += 10;

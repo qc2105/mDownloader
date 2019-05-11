@@ -33,22 +33,16 @@
 #include "progressbar.h"
 #include "utils.h"
 
-/*
- * percent : graph : already download : download rate : remain time
- * 23% [=============>          =============>          ===>        ] [900M] [800K/s] [ETA:02:54]
- */
-
-#define RIGHT 1
-#define LEFT 0
-
 int ProgressBar::graphWidth = 0;
 
 ProgressBar::ProgressBar(qint64 total_size, int block_num)
-    :totalSize(total_size), blockNum(block_num), lastDownloaded(0), direction(RIGHT), data(NULL)
+    :data(NULL)
 {
-	char *term;
 	int i;
 	int screenWidth;
+
+	blockNum = block_num;
+	totalSize = total_size;
 
 	rateIndex = 0;
     memset(downloaded,0x0, sizeof(downloaded));

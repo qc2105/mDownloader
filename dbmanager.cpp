@@ -30,7 +30,6 @@ DbManager::~DbManager()
     {
         m_db.close();
     }
-    QSqlDatabase::removeDatabase("qt_sql_default_connection");
 }
 
 bool DbManager::isOpen() const
@@ -57,6 +56,10 @@ bool DbManager::createTable()
 bool DbManager::addTask(const QString& mg_file_path)
 {
     bool success = false;
+    if (taskExists(mg_file_path))
+    {
+        return false;
+    }
 
     if (!mg_file_path.isEmpty())
     {

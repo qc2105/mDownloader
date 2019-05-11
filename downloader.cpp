@@ -40,10 +40,10 @@
 #define snprintf sprintf_s
 #endif
 
-typedef void* (*threadFunction) (void*);
+typedef void *(*threadFunction)(void *);
 
-Downloader::Downloader(QWidget *parent) :
-    QThread(parent)
+Downloader::Downloader(DbManager &_db, QWidget *parent) : QThread(parent),
+                                                          db(_db)
 {
     m_status = new Status(this);
     setState(Status::Idle);
@@ -67,14 +67,17 @@ Downloader::~Downloader(void)
     delete plugin;
 }
 
-int
-Downloader::init_plugin(void)
+int Downloader::init_plugin(void)
 {
-    if(task.get_proxy_type() == HTTP_PROXY){
+    if (task.get_proxy_type() == HTTP_PROXY)
+    {
         delete plugin;
         plugin = new HttpPlugin;
-    }else{
-        switch(task.get_protocol()){
+    }
+    else
+    {
+        switch (task.get_protocol())
+        {
         case HTTP:
         case HTTPS:
             delete plugin;
@@ -93,29 +96,37 @@ Downloader::init_plugin(void)
 };
 
 /* init_plugin, plugin->get_info */
-int
-Downloader::init_task(void)
+int Downloader::init_task(void)
 {
     int i;
     int ret;
 
 _reinit_plugin:
-    if(init_plugin() < 0){
-        qCritical() <<"Unknown protocol"<<endl;
+    if (init_plugin() < 0)
+    {
+        qCritical() << "Unknown protocol" << endl;
         return -1;
     }
 
-    for(i = 0; task.get_tryCount() <= 0 || i < task.get_tryCount(); i ++){
+    for (i = 0; task.get_tryCount() <= 0 || i < task.get_tryCount(); i++)
+    {
         ret = plugin->get_info(&task);
-        if(ret == -1){
+        if (ret == -1)
+        {
             qCritical() << "Plugin->get_info return -1" << endl;
             return -1;
-        }else if(ret == S_REDIRECT){
-            qDebug() <<"Redirect to: "<<task.get_url()<<endl;
+        }
+        else if (ret == S_REDIRECT)
+        {
+            qDebug() << "Redirect to: " << task.get_url() << endl;
             goto _reinit_plugin;
-        }else if(ret == 0){
+        }
+        else if (ret == 0)
+        {
             return 0;
-        }else{
+        }
+        else
+        {
             continue;
         }
     }
@@ -124,23 +135,20 @@ _reinit_plugin:
     return E_MAX_COUNT;
 }
 
-int
-Downloader::init_local_file_name(void)
+int Downloader::init_local_file_name(void)
 {
     int length;
     char *tmpStr;
 
     length = task.get_local_dir() ? strlen(task.get_local_dir()) : 1;
-    length += task.get_local_file() ? strlen(task.get_local_file()) :
-                                      strlen(task.get_file());
+    length += task.get_local_file() ? strlen(task.get_local_file()) : strlen(task.get_file());
     length += 6;
 
     tmpStr = new char[length];
 
-    snprintf( tmpStr, length, "%s/%s.mg!",
+    snprintf(tmpStr, length, "%s/%s.mg!",
               task.get_local_dir() ? task.get_local_dir() : ".",
-              task.get_local_file() ? task.get_local_file() :
-                                      task.get_file() );
+             task.get_local_file() ? task.get_local_file() : task.get_file());
     delete[] localPath;
     delete[] localMg;
     tmpStr[length - 5] = '\0';
@@ -152,21 +160,20 @@ Downloader::init_local_file_name(void)
 }
 
 // please take a look at save_temp_file_exit() to get more details
-int
-Downloader::init_threads_from_mg(void)
+int Downloader::init_threads_from_mg(void)
 {
     QFile *tempFile = NULL;
     QByteArray readData;
     int i;
     QString error;
 
-
     m_status->setDownloadMode(Status::ResumeDownload);
 
     tempFile = new QFile(localMg);
 
-    if (!tempFile->open(QIODevice::ReadOnly)) {
-        qCritical() <<"Can not access the temp file: "<<localMg<<endl;
+    if (!tempFile->open(QIODevice::ReadOnly))
+    {
+        qCritical() << "Can not access the temp file: " << localMg << endl;
         error = QString("Can not access the temp file: ");
         error += QString(localMg);
         emit errorHappened(error);
@@ -179,12 +186,13 @@ Downloader::init_threads_from_mg(void)
     // get the length of data in mg! file.
     readData.clear();
     qDebug() << QString("\n").toUtf8().size() + blockSize << endl;
+    qDebug() << "teampFile->size(): " << tempFile->size() << endl;
     tempFile->seek(tempFile->size() - QString("\n").toUtf8().size() - blockSize);
     readData.clear();
     readData = tempFile->read(blockSize);
     qint64 fileDataSize = readData.toLongLong();
     qDebug() << "fileDataSize: " << fileDataSize << endl;
-    int nextReadPos = fileDataSize;
+    qint64 nextReadPos = fileDataSize;
 
     // get the url
     tempFile->seek(nextReadPos);
@@ -204,14 +212,15 @@ Downloader::init_threads_from_mg(void)
     threadNum = readData.toInt();
     readData.clear();
 
-    qDebug() << "File size: " << tempFile->size()<< endl;
+    qDebug() << "File size: " << tempFile->size() << endl;
     qDebug() << "threadNum: " << threadNum << endl;
 
     nextReadPos += blockSize;
 
     // TODO: We'd better use a hash function to check.
-    if(tempFile->size() < task.get_file_size() + 3 * blockSize * threadNum) {
-        qCritical() <<"the temp file: \""<<localMg<<"\" is not correct, type I."<<endl;
+    if (tempFile->size() < task.get_file_size() + 3 * blockSize * threadNum)
+    {
+        qCritical() << "the temp file: \"" << localMg << "\" is not correct, type I." << endl;
         error = QString("The temp file: ");
         error += QString(localMg);
         error += QString(" is not correct, type I.");
@@ -224,7 +233,8 @@ Downloader::init_threads_from_mg(void)
     // get the data
     delete[] blocks;
     blocks = new Block[threadNum];
-    for(i = 0; i < threadNum; i ++){
+    for (i = 0; i < threadNum; i++)
+    {
         readData = tempFile->read(blockSize);
         blocks[i].startPoint = readData.toLong();
         readData.clear();
@@ -243,7 +253,8 @@ Downloader::init_threads_from_mg(void)
         nextReadPos += blockSize;
         tempFile->seek(nextReadPos);
         qDebug() << "size for thread " << i << ": " << blocks[i].size << endl;
-        if(!(blocks[i].bufferFile.open(localMg))){
+        if (!(blocks[i].bufferFile.open(localMg)))
+        {
             tempFile->close();
             delete tempFile;
             perror("Can not open the temp file to write");
@@ -253,44 +264,45 @@ Downloader::init_threads_from_mg(void)
     }
 
     tempFile->close();
-    delete tempFile;    // don't panic, we only delete the QFile object here not the tempFile itself.
+    delete tempFile; // don't panic, we only delete the QFile object here not the tempFile itself.
     return 0;
 }
 
-int
-Downloader::init_threads_from_info(void)
+int Downloader::init_threads_from_info(void)
 {
     qint64 block_size;
     int i;
 
     m_status->setDownloadMode(Status::NewDownload);
 
-    threadNum = task.get_threadNum()> 0 ? task.get_threadNum() : 1;
+    threadNum = task.get_threadNum() > 0 ? task.get_threadNum() : 1;
     block_size = task.get_file_size() / threadNum;
-    if(block_size <= 20480){ // too small file
+    if (block_size <= 20480)
+    { // too small file
         threadNum = 1;
         block_size = task.get_file_size();
     }
 
     delete[] blocks;
     blocks = new Block[threadNum];
-    for(i = 0; i < threadNum; i ++){
+    for (i = 0; i < threadNum; i++)
+    {
         blocks[i].startPoint = i * block_size;
         blocks[i].size = block_size;
-        if(!(blocks[i].bufferFile.open(localMg))){
+        if (!(blocks[i].bufferFile.open(localMg)))
+        {
             perror("Can not open the temp file to write");
             emit errorHappened(QString("Can not open the temp file to write"));
             return -1;
         }
     }
 
-    blocks[threadNum - 1].size = task.get_file_size() - block_size * ( threadNum - 1);
+    blocks[threadNum - 1].size = task.get_file_size() - block_size * (threadNum - 1);
 
     return 0;
 }
 
-int
-Downloader::thread_create(void)
+int Downloader::thread_create(void)
 {
     int i;
 
@@ -299,41 +311,46 @@ Downloader::thread_create(void)
     worker->moveToThread(workerThread);
     connect(workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     workerThread->start();
-    for(i = 0; i < threadNum; i ++){
-        if(blocks[i].ptr_thread == 0){ // found an empty slot
+    for (i = 0; i < threadNum; i++)
+    {
+        if (blocks[i].ptr_thread == 0)
+        { // found an empty slot
             blocks[i].ptr_thread = workerThread;
             break;
         }
     }
 
-    if(i == threadNum) return -1;
+    if (i == threadNum)
+        return -1;
 
-    connect(this, SIGNAL(begin(Downloader*,QThread*)), worker, SLOT(doWork(Downloader*,QThread*)));
+    connect(this, SIGNAL(begin(Downloader *, QThread *)), worker, SLOT(doWork(Downloader *, QThread *)));
     emit begin(this, workerThread);
-    disconnect(this,SIGNAL(begin(Downloader*,QThread*)), 0,0);
+    disconnect(this, SIGNAL(begin(Downloader *, QThread *)), 0, 0);
 
     return 0;
 }
 
-int
-Downloader::self(QThread *ptr_thread)
+int Downloader::self(QThread *ptr_thread)
 {
     QThread *self;
     self = ptr_thread;
     int i;
-    while(1){
-        for(i = 0; i < threadNum; i ++){
-            if(blocks[i].ptr_thread == self) return i;
+    while (1)
+    {
+        for (i = 0; i < threadNum; i++)
+        {
+            if (blocks[i].ptr_thread == self)
+                return i;
         }
         // the parent thread maybe slower than me
     }
 }
 
-void
-Downloader::setState(const Status::DownloadStatus state)
+void Downloader::setState(const Status::DownloadStatus state)
 {
     m_status->setDownloadStatus(state);
-    switch (state) {
+    switch (state)
+    {
     case Status::Idle:
         stateString = QT_TRANSLATE_NOOP(Downloader, "Idle");
         break;
@@ -377,29 +394,38 @@ Downloader::getStateString() const
     return stateString;
 }
 
-int
-Downloader::download_thread(Downloader *downloader, QThread *ptr_thread)
+int Downloader::download_thread(Downloader *downloader, QThread *ptr_thread)
 {
     int self, ret;
     self = downloader->self(ptr_thread);
-    qDebug() << endl << "download_thread start in thread: " << self;
+    qDebug() << endl
+             << "download_thread start in thread: " << self;
 
-    while(1){
+    while (1)
+    {
         ret = downloader->plugin->download(downloader->task, downloader->blocks + self);
-        if (ret == E_SYS) {
-            qCritical() << endl << "thread " << self << " plugin download returen E_SYS" << endl;
+        if (ret == E_SYS)
+        {
+            qCritical() << endl
+                        << "thread " << self << " plugin download returen E_SYS" << endl;
         }
         else
         {
-            qDebug() << endl << "thread " << self << " plugin download returned: " << ret << endl;
+            qDebug() << endl
+                     << "thread " << self << " plugin download returned: " << ret << endl;
         }
-        if(ret == E_SYS){ // system error
+        if (ret == E_SYS)
+        { // system error
             downloader->blocks[self].state = EXIT;
             return -1;
-        }else if(ret == 0){
+        }
+        else if (ret == 0)
+        {
             downloader->blocks[self].state = EXIT;
             return 0;
-        }else{
+        }
+        else
+        {
             continue;
         }
     }
@@ -408,26 +434,33 @@ Downloader::download_thread(Downloader *downloader, QThread *ptr_thread)
     return E_MAX_COUNT;
 }
 
-int
-Downloader::schedule(void)
+int Downloader::schedule(void)
 {
     int i, j;
     int joined;
 
     joined = 0;
-    for(i = 0; i < threadNum; i ++){
-        if(blocks[i].state == WAIT){
-            for(j = i + 1; j < threadNum; j ++){
-                if(blocks[i].startPoint + blocks[i].size == blocks[j].startPoint){
+    for (i = 0; i < threadNum; i++)
+    {
+        if (blocks[i].state == WAIT)
+        {
+            for (j = i + 1; j < threadNum; j++)
+            {
+                if (blocks[i].startPoint + blocks[i].size == blocks[j].startPoint)
+                {
                     break;
                 }
             }
-            if(j < threadNum && blocks[j].downloaded == 0){
-                if(blocks[j].state == STOP || blocks[j].state == EXIT){
+            if (j < threadNum && blocks[j].downloaded == 0)
+            {
+                if (blocks[j].state == STOP || blocks[j].state == EXIT)
+                {
                     blocks[j].ptr_thread->quit();
                     blocks[j].state = JOINED;
                     blocks[j].bufferFile.close();
-                }else if(blocks[j].state != JOINED){
+                }
+                else if (blocks[j].state != JOINED)
+                {
                     continue;
                 }
                 blocks[i].size += blocks[j].size;
@@ -438,21 +471,28 @@ Downloader::schedule(void)
                 i = j;
                 joined += j - i;
                 qint64 *data = new qint64[threadNum];
-                for(j = 0; j < threadNum; j ++){
+                for (j = 0; j < threadNum; j++)
+                {
                     data[j] = blocks[j].startPoint;
                 }
                 pb->set_start_point(data);
 
                 delete[] data;
             }
-        }else if(blocks[i].state == EXIT){
+        }
+        else if (blocks[i].state == EXIT)
+        {
             blocks[i].ptr_thread->quit();
             blocks[i].state = JOINED;
             blocks[i].bufferFile.close();
-            joined ++;
-        }else if(blocks[i].state == JOINED){
-            joined ++;
-        }else{
+            joined++;
+        }
+        else if (blocks[i].state == JOINED)
+        {
+            joined++;
+        }
+        else
+        {
             continue;
         }
     }
@@ -460,14 +500,15 @@ Downloader::schedule(void)
     return threadNum - joined;
 }
 
-int
-Downloader::remove_temp_file_exit(void)
+int Downloader::remove_temp_file_exit(void)
 {
     int i;
     QFile *tempFile;
 
-    for(i = 0; i < threadNum; i ++){
-        if(blocks[i].state != JOINED){
+    for (i = 0; i < threadNum; i++)
+    {
+        if (blocks[i].state != JOINED)
+        {
             blocks[i].ptr_thread->quit();
             blocks[i].ptr_thread->terminate();
             blocks[i].ptr_thread->wait();
@@ -484,16 +525,17 @@ Downloader::remove_temp_file_exit(void)
     return 0;
 }
 
-int
-Downloader::save_temp_file_exit(void)
+int Downloader::save_temp_file_exit(void)
 {
     int i;
     QFile *tempFile;
     QByteArray writeData;
     QString error;
 
-    for(i = 0; i < threadNum; i ++){
-        if(blocks[i].state != JOINED){
+    for (i = 0; i < threadNum; i++)
+    {
+        if (blocks[i].state != JOINED)
+        {
             blocks[i].ptr_thread->quit();
             blocks[i].ptr_thread->terminate();
             blocks[i].ptr_thread->wait();
@@ -502,15 +544,18 @@ Downloader::save_temp_file_exit(void)
         }
     };
 
-    if(task.get_file_size() < 0){
-        qCritical() <<"!!!You can not continue in further"<<endl;
+    if (task.get_file_size() < 0)
+    {
+        qCritical() << "!!!You can not continue in further" << endl;
         setState(Status::Failed);
         exit(-1); // Is this right?
     }
 
+
     tempFile = new QFile(localMg);
-    if (!tempFile->open(QIODevice::ReadWrite)) {
-        qCritical() <<"Can not create the temp file: "<<localMg<<endl;
+    if (!tempFile->open(QIODevice::ReadWrite))
+    {
+        qCritical() << "Can not create the temp file: " << localMg << endl;
         error = QString("Can not create the temp file: ");
         error += QString(localMg);
         emit errorHappened(error);
@@ -518,7 +563,8 @@ Downloader::save_temp_file_exit(void)
         return -1;
     }
 
-    int nextWritePos = task.get_file_size();
+    qint64 nextWritePos = task.get_file_size();
+    qDebug() << "nextWritePos: " << nextWritePos << endl;
 
     tempFile->seek(nextWritePos);
 
@@ -545,7 +591,8 @@ Downloader::save_temp_file_exit(void)
     tempFile->seek(nextWritePos);
 
     // save data
-    for(i = 0; i < threadNum; i++){
+    for (i = 0; i < threadNum; i++)
+    {
         writeData.setNum(blocks[i].startPoint);
         tempFile->write(writeData);
         writeData.clear();
@@ -584,8 +631,12 @@ Downloader::save_temp_file_exit(void)
     qDebug() << "write \n size: " << write_size << endl;
     writeData.clear();
 
+    tempFile->waitForBytesWritten(-1);
+
     tempFile->close();
     delete tempFile;
+
+    db.addTask(localMg);
 
     setState(Status::Paused);
     QString inforMsg = tr("Downloading paused.");
@@ -594,11 +645,11 @@ Downloader::save_temp_file_exit(void)
     return 0;
 }
 
-int
-Downloader::try_resume_from_paused(void)
+int Downloader::try_resume_from_paused(void)
 {
     int ret;
-    if(!task.get_resumeSupported() || task.get_file_size() < 0){
+    if (!task.get_resumeSupported() || task.get_file_size() < 0)
+    {
         threadNum = 1;
         delete[] blocks;
         blocks = new Block[1];
@@ -606,7 +657,7 @@ Downloader::try_resume_from_paused(void)
         blocks[0].bufferFile.open(localMg);
         ret = 0;
     }
-    else if(file_exist(localMg))
+    else if (file_exist(localMg))
     {
         ret = init_threads_from_mg();
     }
@@ -617,8 +668,7 @@ Downloader::try_resume_from_paused(void)
     return ret;
 }
 
-int
-Downloader::create_zero_file(void)
+int Downloader::create_zero_file(void)
 {
     QFile file(localPath);
     if (!file.open(QIODevice::ReadWrite))
@@ -635,12 +685,12 @@ Downloader::create_zero_file(void)
     }
 }
 
-int
-Downloader::is_already_existed(void)
+int Downloader::is_already_existed(void)
 {
     QString errorMsg;
-    if(file_exist(localPath)){
-        qCritical() <<"File already exist: "<<localPath<<endl;
+    if (file_exist(localPath))
+    {
+        qCritical() << "File already exist: " << localPath << endl;
         errorMsg = QString(tr("The file already exists: "));
         errorMsg += QDir::toNativeSeparators(localPath);
         emit errorHappened(errorMsg);
@@ -650,11 +700,12 @@ Downloader::is_already_existed(void)
         return 0;
 }
 
-int
-Downloader::create_downloading_threads(void)
+int Downloader::create_downloading_threads(void)
 {
-    for(int i = 0; i < threadNum; i ++){
-        if(thread_create() < 0){
+    for (int i = 0; i < threadNum; i++)
+    {
+        if (thread_create() < 0)
+{
             perror("Create thread failed");
             emit errorHappened("Create thread failed");
             return -1;
@@ -664,8 +715,7 @@ Downloader::create_downloading_threads(void)
     return 0;
 }
 
-int
-Downloader::pre_download_process(double start_time)
+int Downloader::pre_download_process(double start_time)
 {
     int ret = 0;
 
@@ -674,21 +724,22 @@ Downloader::pre_download_process(double start_time)
     // Already done...
     if (is_already_existed())
         return 3;
-    if(task.get_file_size() == 0){
-        if ( (ret =create_zero_file()) == 0)
+    if (task.get_file_size() == 0)
+    {
+        if ((ret = create_zero_file()) == 0)
             report_done(start_time);
         return ret;
     }
 
     char buf[20];
     convert_size(buf, task.get_file_size());
-    qDebug() <<"Filesize: "<<buf<<endl;
+    qDebug() << "Filesize: " << buf << endl;
     emit set_GuiLabelTotal(QString(buf));
     toTalSize = QString(buf);
 
-    if ( (ret=try_resume_from_paused()) < 0)
+    if ((ret = try_resume_from_paused()) < 0)
     {
-        qCritical() <<"try_resume_from_paused failed"<<endl;
+        qCritical() << "try_resume_from_paused failed" << endl;
         return ret;
     }
 
@@ -700,20 +751,20 @@ Downloader::pre_download_process(double start_time)
     return 0;
 }
 
-int
-Downloader::file_download(void)
+int Downloader::file_download(void)
 {
     double time = get_current_time();
-    int pre_return = -100;  // -100, a value that's impossible.
+    int pre_return = -100; // -100, a value that's impossible.
 
-    if((pre_return=pre_download_process(time)) != 0)
+    if ((pre_return = pre_download_process(time)) != 0)
     {
-        if (pre_return == 3)   // file already exists.
+        if (pre_return == 3) // file already exists.
         {
             setState(Status::Finished);
             return -3;
         }
-        else {
+        else
+        {
             qCritical() << "pre_download_processing failed" << endl;
             return -1;
         }
@@ -722,8 +773,9 @@ Downloader::file_download(void)
     // update loop
     prepare_progress_bar();
     setState(Status::Downloading);
-    while(1){
-        if(getState() == Status::Pausing)
+    while (1)
+    {
+        if (getState() == Status::Pausing)
         {
             delete[] pb->data;
             save_temp_file_exit();
@@ -736,12 +788,14 @@ Downloader::file_download(void)
             return 0;
         }
 
-        for(int i = 0; i < threadNum; i ++){
+        for (int i = 0; i < threadNum; i++)
+        {
             pb->data[i] = blocks[i].downloaded;
         }
         update_progress_bar();
 
-        if(schedule() == 0){
+        if (schedule() == 0)
+        {
             qDebug() << "all the thread exited!" << endl;
             break; // all the thread exited
         }
@@ -758,11 +812,11 @@ Downloader::file_download(void)
     return 0;
 }
 
-void
-Downloader::prepare_progress_bar(void)
+void Downloader::prepare_progress_bar(void)
 {
     pb->data = new qint64[threadNum];
-    for(int i = 0; i < threadNum; i ++){
+    for (int i = 0; i < threadNum; i++)
+    {
         pb->data[i] = blocks[i].startPoint;
     }
 
@@ -774,8 +828,7 @@ Downloader::prepare_progress_bar(void)
     pb->set_start_point(pb->data);
 }
 
-void
-Downloader::update_progress_bar(void)
+void Downloader::update_progress_bar(void)
 {
     pb->update(pb->data);
     float downloadedRatio = (float)(pb->get_curr_downloaded()) / (float)(task.get_file_size()) * 100;
@@ -786,8 +839,7 @@ Downloader::update_progress_bar(void)
     emit set_GuiLabelRemainingTime(QString(pb->get_eta()));
 }
 
-int
-Downloader::post_download_process(double download_start_time)
+int Downloader::post_download_process(double download_start_time)
 {
     if (check_downloaded_file() != 0)
     {
@@ -803,11 +855,12 @@ Downloader::post_download_process(double download_start_time)
 
     report_done(download_start_time);
 
+    db.removeTask(localMg);
+
     return 0;
 }
 
-void
-Downloader::report_done(double start_time)
+void Downloader::report_done(double start_time)
 {
     char buf[20];
     double time;
@@ -818,33 +871,33 @@ Downloader::report_done(double start_time)
     convert_time(buf, time);
     emit set_GuiProgressBarValue(100);
 
-    qDebug() << endl << "Download successfully in "<<buf<<endl;
+    qDebug() << endl
+             << "Download successfully in " << buf << endl;
     errorMsg = QString(tr("Download successfully in "));
     errorMsg += QString(buf);
     emit errorHappened(errorMsg);
     emit done();
 }
 
-int
-Downloader::resize_downloaded_file(void)
+int Downloader::resize_downloaded_file(void)
 {
     QFile downloadedFile(localPath);
 
     if (!downloadedFile.resize(task.get_file_size())) // Do we really need !sigint_received?
     {
-        qCritical() <<"Resize the downloaed file failed"<<endl;
+        qCritical() << "Resize the downloaed file failed" << endl;
         emit errorHappened(QString(tr("Resize the downloaed file failed")));
         return -1;
     }
     return 0;
 }
 
-int
-Downloader::rename_temp_file(void)
+int Downloader::rename_temp_file(void)
 {
     QFile file(localMg);
 
-    if(!file.rename(localPath)){
+    if (!file.rename(localPath))
+    {
         qCritical() << "Rename failed" << endl;
         emit errorHappened(QString(tr("Rename failed")));
         return -1;
@@ -856,21 +909,23 @@ Downloader::rename_temp_file(void)
     }
 }
 
-int
-Downloader::check_downloaded_file(void)
+int Downloader::check_downloaded_file(void)
 {
     // recheck the size of the file if possible
-    if(task.get_file_size() >= 0){
+    if (task.get_file_size() >= 0)
+    {
         qint64 downloaded;
         downloaded = 0;
-        for(int i = 0; i < threadNum; i ++){
+        for (int i = 0; i < threadNum; i++)
+        {
             downloaded += blocks[i].downloaded;
         }
         // the downloaded maybe bigger than the filesize
         // because the overlay of the data
-        if(downloaded < task.get_file_size()){
-            qCritical() <<"!!!Some error happend when downloaded"<<endl;
-            qCritical() <<"!!!Redownloading is recommended"<<endl;
+        if (downloaded < task.get_file_size())
+        {
+            qCritical() << "!!!Some error happend when downloaded" << endl;
+            qCritical() << "!!!Redownloading is recommended" << endl;
             emit errorHappened("!!!Some error happend when downloaded. !!!Redownloading is recommended");
             save_temp_file_exit();
             return (-1);
@@ -880,21 +935,22 @@ Downloader::check_downloaded_file(void)
     return 0;
 }
 
-void
-Downloader::run(void)
+void Downloader::run(void)
 {
     int ret;
 
-    ret = init_task();  // Maybe we could put this init_task() function into the class Task?
-    if(ret < 0){
-        qCritical() <<"Can not get the info of the file "<<endl;
+    ret = init_task(); // Maybe we could put this init_task() function into the class Task?
+    if (ret < 0)
+    {
+        qCritical() << "Can not get the info of the file " << endl;
         emit errorHappened(QString(tr("Can not get the info of the file ")));
 
         return;
     }
 
-    if(task.get_isDirectory()){
-        qDebug() <<"This is a directory: "<<task.get_url()<<endl;
+    if (task.get_isDirectory())
+    {
+        qDebug() << "This is a directory: " << task.get_url() << endl;
         return;
     }
 
@@ -903,71 +959,67 @@ Downloader::run(void)
     return;
 }
 
-void
-Downloader::runMyself(QString QUrl)
+void Downloader::runMyself(QString QUrl)
 {
-    if (!QUrl.isEmpty()) {
+    if (!QUrl.isEmpty())
+{
         task.set_url(QUrl.toUtf8().constData());
-    }else {
+    }
+    else
+    {
         qCritical() << "runMyself: QUrl is empty!" << endl;
     }
     setState(Status::Starting);
     start();
 }
 
-void
-Downloader::resumeMyself(QString tempFilePath)
+void Downloader::resumeMyself(QString tempFilePath)
 {
     init_local_file_name();
     if (!tempFilePath.isEmpty())
     {
         init_threads_from_mg();
-    }else {
+    }
+    else
+    {
         qCritical() << "runMyself: tempFilePath is empty!" << endl;
     }
     runMyself(task.get_url());
 }
 
-void
-Downloader::resumeTask(void)
+void Downloader::resumeTask(void)
 {
     setState(Status::Starting);
     start();
 }
 
-void
-Downloader::setLocalDirectory(QString QDir)
+void Downloader::setLocalDirectory(QString QDir)
 {
     task.set_local_dir(QDir.toUtf8().constData());
     is_dirSetted = true;
 }
 
-void
-Downloader::setLocalFileName(QString QFileName)
+void Downloader::setLocalFileName(QString QFileName)
 {
     task.set_local_file(QFileName.toUtf8().constData());
 }
 
-void
-Downloader::pause(void)
+void Downloader::pause(void)
 {
     setState(Status::Pausing);
 }
 
-void
-Downloader::stop(void)
+void Downloader::stop(void)
 {
     setState(Status::Stopping);
 }
 
-void
-Downloader::setThreadNum(int num)
+void Downloader::setThreadNum(int num)
 {
     task.set_threadNum(num);
 }
 
-void
-Downloader::setPaused(bool paused)
+void Downloader::setPaused(bool paused)
 {
     if (paused)
     {

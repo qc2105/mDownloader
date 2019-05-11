@@ -76,7 +76,6 @@ HeadData::get_attr(const char *attrName)
 int 
 HeadData::set_attr(const char *attrName, const char *attrValue)
 {
-    qDebug() << "HeadData::set_attr: " << attrName << ": " << attrValue << '\n';
     HeadDataNode *it;
 
     assert(attrName != NULL && attrValue != NULL);

@@ -192,10 +192,8 @@ Http::send_head()
         return -1;
     }
 
-    qDebug() << "EXE enter into send_head()" << endl;
 	for(it = request.head; it != NULL; it = it->next){
 		snprintf(buf, 1024, "%s: %s\r\n", it->attrName, it->attrValue);
-        qDebug() << "buf in send head: " << buf << endl;
         if((ret=qSock->write(buf)) < 0) return ret;
         qSock->waitForBytesWritten(timeout * 1000);
 		log("%s: %s\r\n", it->attrName, it->attrValue);
@@ -231,7 +229,6 @@ Http::get(const char *url)
 	int ret;
 
     snprintf(buf, 1024, "GET %s HTTP/%s\r\n", url, HTTP_VERSION);
-    qDebug() << "buf to send in get: " << buf << endl;
     if((ret=qSock->write(buf)) < 0) return ret;
     qSock->waitForBytesWritten(timeout * 1000);
 	log("GET %s HTTP/%s\r\n", url, HTTP_VERSION);

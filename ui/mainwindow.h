@@ -32,6 +32,7 @@
 #include "../downloader.h"
 #include "errormessagebox.h"
 #include "jobview.h"
+#include "../dbmanager.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -120,6 +121,7 @@ private:
     int jobsToStop;
 
     int rowOfDownloader(Downloader *dloader) const;
+    DbManager db = DbManager("mDownloader.db");
 };
 
 #endif // MAINWINDOW_H

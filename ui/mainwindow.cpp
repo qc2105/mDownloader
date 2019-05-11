@@ -48,12 +48,12 @@
 extern void
 catch_ctrl_c(int signo);
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    quitDialog(0), saveChanges(false),
-    newJobFileName(""), newJobDestinationDirectory("")
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          quitDialog(0), saveChanges(false),
+                                          newJobFileName(""), newJobDestinationDirectory("")
 {
     m_has_error_happend = false;
+    db.createTable();
     QMetaObject::invokeMethod(this, "loadSettings", Qt::QueuedConnection);
     setWindowIcon(QIcon(":/ui/icons/motocool.jpg"));
 
@@ -127,11 +127,21 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(removeJob()));
     connect(openDirAction, SIGNAL(triggered()),
             this, SLOT(openDir()));
+
+    // Resume form mg!s
+    QStringList mgs = db.getAllPaths();
+    for (int i = 0; i < mgs.size(); i++)
+    {
+        resuMeJob(mgs[i]);
+    }
 }
 
 MainWindow::~MainWindow()
 {
-
+    for (int i = 0; i < jobs.size(); i++)
+    {
+        delete jobs[i].downloader;
+    }
 }
 
 void MainWindow::setActionsEnabled()
@@ -200,8 +210,8 @@ bool MainWindow::addJob()
 {
     NewTask *newTask = new NewTask(this);
 
-    connect(newTask, SIGNAL(newJob(QString,QString,QString,int)),
-            this, SLOT(addJob(QString,QString,QString,int)));
+    connect(newTask, SIGNAL(newJob(QString, QString, QString, int)),
+            this, SLOT(addJob(QString, QString, QString, int)));
     newTask->show();
     return true;
 }
@@ -220,24 +230,24 @@ void MainWindow::resuMeJob(QString tempFilePath)
     QString DownDir = tempFilePath;
     DownDir.chop(tempFilePath.size() - tempFilePath.lastIndexOf(QDir::separator()));
 
-    QString fileName = tempFilePath.right(tempFilePath.size() - tempFilePath.lastIndexOf(QDir::separator()) -1);
+    QString fileName = tempFilePath.right(tempFilePath.size() - tempFilePath.lastIndexOf(QDir::separator()) - 1);
     fileName.chop(strlen(".mg!"));
 
     // Check if the job is already being downloaded.
-    foreach(Job job, jobs)
+    for (int i = 0; i < jobs.size(); i++)
     {
-        if (job.tempFilePath == tempFilePath)
+        if (jobs[i].tempFilePath == tempFilePath)
         {
             QMessageBox::warning(this, tr("Already downloading"),
                                  tr("The file %1 is already being downloaded.")
-                                 .arg(fileName));
+                                     .arg(fileName));
             return;
         }
     }
 
     qDebug() << DownDir << "ttt" << fileName << endl;
 
-    Downloader *downloader = new Downloader(this);
+    Downloader *downloader = new Downloader(db, this);
 
     downloader->setLocalFileName(fileName);
     downloader->setLocalDirectory(DownDir);
@@ -255,7 +265,6 @@ void MainWindow::resuMeJob(QString tempFilePath)
             this, SLOT(updateRemainingTime(QString)));
     connect(downloader, SIGNAL(errorHappened(QString)), this, SLOT(on_error_happens(QString)));
 
-
     // Add the downloader to the list of downloading jobs.
     Job job;
     job.downloader = downloader;
@@ -270,7 +279,8 @@ void MainWindow::resuMeJob(QString tempFilePath)
 
     item->setText(0, baseFileName);
     item->setToolTip(0, tr("File: %1<br>Destination: %2")
-                     .arg(baseFileName).arg(DownDir));
+                            .arg(baseFileName)
+                            .arg(DownDir));
     item->setText(1, tr("0/0"));
     item->setText(2, "0");
     item->setText(3, "0.0 KB/s");
@@ -285,19 +295,19 @@ void MainWindow::resuMeJob(QString tempFilePath)
 void MainWindow::addJob(QString fileName, QString DownDir, QString URL, int threadNUM)
 {
     // Check if the job is already being downloaded.
-    foreach(Job job, jobs)
+    for (int i = 0; i < jobs.size(); i++)
     {
-        if (job.fileName == fileName && job.destinationDir == DownDir)
+        if (jobs[i].fileName == fileName && jobs[i].destinationDir == DownDir)
         {
             QMessageBox::warning(this, tr("Already downloading"),
                                  tr("The file %1 is already being downloaded.")
-                                 .arg(fileName));
+                                     .arg(fileName));
             return;
         }
     }
 
     //Create a new downloader
-    Downloader *downloader = new Downloader(this);
+    Downloader *downloader = new Downloader(db, this);
     downloader->setLocalFileName(fileName);
     downloader->setLocalDirectory(DownDir);
     downloader->setThreadNum(threadNUM);
@@ -315,7 +325,6 @@ void MainWindow::addJob(QString fileName, QString DownDir, QString URL, int thre
             this, SLOT(updateRemainingTime(QString)));
     connect(downloader, SIGNAL(errorHappened(QString)), this, SLOT(on_error_happens(QString)));
 
-
     // Add the downloader to the list of downloading jobs.
     Job job;
     job.downloader = downloader;
@@ -330,7 +339,8 @@ void MainWindow::addJob(QString fileName, QString DownDir, QString URL, int thre
 
     item->setText(0, baseFileName);
     item->setToolTip(0, tr("File: %1<br>Destination: %2")
-                     .arg(baseFileName).arg(DownDir));
+                            .arg(baseFileName)
+                            .arg(DownDir));
     item->setText(1, tr("0/0"));
     item->setText(2, "0");
     item->setText(3, "0.0 KB/s");
@@ -351,6 +361,7 @@ void MainWindow::removeJob()
 
     // Stop the downloader.
     dloader->stop();
+    db.removeTask(QString(dloader->get_localMg().c_str()));
 
     // Remove the row from the view.
     delete jobView->takeTopLevelItem(row);
@@ -377,12 +388,10 @@ void MainWindow::openDir()
 
 void MainWindow::moveJobUp()
 {
-
 }
 
 void MainWindow::moveJobDown()
 {
-
 }
 
 int MainWindow::rowOfDownloader(Downloader *dloader) const
@@ -390,8 +399,9 @@ int MainWindow::rowOfDownloader(Downloader *dloader) const
     // Return the row that displays this downloader's status or -1
     // if the downloader is not known.
     int row = 0;
-    foreach (Job job, jobs) {
-        if (job.downloader == dloader)
+    for(int i = 0; i < jobs.size(); i++)
+    {
+        if (jobs[i].downloader == dloader)
             return row;
         ++row;
     }
@@ -407,9 +417,9 @@ void MainWindow::updateState(QString state)
     if (item)
     {
         item->setToolTip(0, tr("File: %1<br>Destination: %2<br>State: %3")
-                         .arg(jobs.at(row).fileName)
-                         .arg(jobs.at(row).destinationDir)
-                         .arg(state));
+                                .arg(jobs.at(row).fileName)
+                                .arg(jobs.at(row).destinationDir)
+                                .arg(state));
 
         item->setText(4, state);
     }
@@ -464,25 +474,25 @@ const Downloader *MainWindow::downloaderForRow(int row) const
     return jobs.at(row).downloader;
 }
 
-
 void MainWindow::on_error_happens(QString errorMsg)
 {
     // When the downloading succeeds m_has_error_happend should keep to be false.
-    if (!errorMsg.contains(tr("Download successfully in"))) {
+    if (!errorMsg.contains(tr("Download successfully in")))
+    {
         m_has_error_happend = true;
         m_eMsgBox.DisplayError(errorMsg);
         qCritical() << "Error happened: " << errorMsg << endl;
-    } else {
+    }
+    else
+    {
         m_has_error_happend = false;
     }
 }
 
-
-void MainWindow::closeEvent(QCloseEvent* /*event*/)
+void MainWindow::closeEvent(QCloseEvent * /*event*/)
 {
     qDebug() << "closeEvent is called";
 }
-
 
 void MainWindow::about()
 {

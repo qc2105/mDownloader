@@ -32,6 +32,8 @@ TEST_F(dbTest, test_addTask)
 {
     db.addTask(path1);
     ASSERT_TRUE(db.taskExists(path1));
+    bool ret = db.addTask(path1);
+    ASSERT_FALSE(ret);
 }
 
 TEST_F(dbTest, test_removeTask)
@@ -58,12 +60,6 @@ TEST_F(dbTest, test_getAllPaths)
     ASSERT_STREQ(paths[0].toStdString().c_str(), path1.toStdString().c_str());
     ASSERT_STREQ(paths[1].toStdString().c_str(), path2.toStdString().c_str());
     ASSERT_STREQ(paths[2].toStdString().c_str(), path3.toStdString().c_str());
-}
-
-TEST_F(dbTest, test_destructor)
-{
-    db.~DbManager();
-    ASSERT_FALSE(db.isOpen());
 }
 
 int main()

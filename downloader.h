@@ -35,99 +35,98 @@
 #include "url.h"
 #include "progressbar.h"
 #include "status.h"
+#include "dbmanager.h"
 
-
-class Downloader: public QThread
+class Downloader : public QThread
 {
     Q_OBJECT
-	public:
-        Downloader(QWidget *parent=0);
-		~Downloader(void);
+public:
+    Downloader(DbManager &_db, QWidget *parent = 0);
+    ~Downloader(void);
 
-        void run(void);
+    void run(void);
 
+public:
+    static int download_thread(Downloader *downloader, QThread *ptr_thread);
+    int self(QThread *);
 
-	public:
-        static int download_thread(Downloader *downloader, QThread *ptr_thread);
-        int self(QThread *);
+    void setState(const Status::DownloadStatus state);
+    Status::DownloadStatus getState() const;
 
-        void setState(const Status::DownloadStatus state);
-        Status::DownloadStatus getState() const;
+    QString getStateString() const;
 
-        QString getStateString() const;
+    QString getTotalSize() const { return toTalSize; }
 
-        QString getTotalSize() const { return toTalSize;}
+    Task task;
+    std::string get_localMg() { return std::string(localMg); };
 
-        Task task;
+public slots:
+    void runMyself(QString);
+    void resumeMyself(QString);
+    void resumeTask(void);
+    void setLocalDirectory(QString);
+    void setLocalFileName(QString);
+    void pause(void);
+    void stop(void);
+    void setThreadNum(int);
+    void setPaused(bool paused);
 
-    public slots:
-        void runMyself(QString);
-        void resumeMyself(QString);
-        void resumeTask(void);
-        void setLocalDirectory(QString);
-        void setLocalFileName(QString);
-        void pause(void);
-        void stop(void);
-        void setThreadNum(int);
-        void setPaused(bool paused);
+signals:
+    void begin(Downloader *downloader, QThread *ptr_thread);
+    void set_GuiProgressBarMinimum(int);
+    void set_GuiProgressBarValue(int);
+    void set_GuiProgressBarMaximum(int);
+    void set_GuiLabelTotal(QString);
+    void set_GuiLabelDownloaded(QString);
+    void set_GuiLabelSpeed(QString);
+    void set_GuiLabelRemainingTime(QString);
+    void errorHappened(QString);
+    void done();
+    void stateChanged(QString);
 
-    signals:
-        void begin(Downloader *downloader, QThread *ptr_thread);
-        void set_GuiProgressBarMinimum(int);
-        void set_GuiProgressBarValue(int);
-        void set_GuiProgressBarMaximum(int);
-        void set_GuiLabelTotal(QString);
-        void set_GuiLabelDownloaded(QString);
-        void set_GuiLabelSpeed(QString);
-        void set_GuiLabelRemainingTime(QString);
-        void errorHappened(QString);
-        void done();
-        void stateChanged(QString);
+private:
+    int init_plugin(void);
+    int init_task(void);
+    int init_local_file_name(void);
+    int init_threads_from_mg(void);
+    int init_threads_from_info(void);
+    int create_zero_file(void);
+    int thread_create(void);
 
-	private:
-        int init_plugin(void);
-		int init_task(void);
-		int init_local_file_name(void);
-		int init_threads_from_mg(void);
-		int init_threads_from_info(void);
-        int create_zero_file(void);
-		int thread_create(void);
+    int schedule(void);
+    int save_temp_file_exit(void);
+    int remove_temp_file_exit(void);
+    int is_already_existed(void);
+    int create_downloading_threads(void);
+    int pre_download_process(double start_time);
+    int file_download(void);
+    int try_resume_from_paused(void);
 
-		int schedule(void);
-        int save_temp_file_exit(void);
-        int remove_temp_file_exit(void);
-        int is_already_existed(void);
-        int create_downloading_threads(void);
-        int pre_download_process(double start_time);
-        int file_download(void);
-        int try_resume_from_paused(void);
+    void prepare_progress_bar(void);
+    void update_progress_bar();
+    int check_downloaded_file(void);
 
-        void prepare_progress_bar(void);
-        void update_progress_bar();
-        int check_downloaded_file(void);
+    int rename_temp_file(void);
+    int resize_downloaded_file(void);
+    void report_done(double start_time);
 
-        int rename_temp_file(void);
-        int resize_downloaded_file(void);
-        void report_done(double start_time);
+    int post_download_process(double download_start_time);
 
-        int post_download_process(double download_start_time);
-
-
-
-	private:
-        const int max_url_length = 1000;
-        const int blockSize = 100;
-		Plugin *plugin;
-		char *localPath;
-		char *localMg;
-		int threadNum;
-		Block *blocks;
-		ProgressBar *pb;
-        bool is_dirSetted;
-        Status *m_status;
-        QString toTalSize;
-        QString errorString;
-        QString stateString;
+private:
+    const int max_url_length = 1000;
+    const int blockSize = 100;
+    Plugin *plugin;
+    char *localPath;
+    char *localMg;
+    int threadNum;
+    Block *blocks;
+    ProgressBar *pb;
+    bool is_dirSetted;
+    Status *m_status;
+    QString toTalSize;
+    QString errorString;
+    QString stateString;
+    DbManager &db;
 };
 
 class DownloadWorker : public QObject
@@ -135,8 +134,10 @@ class DownloadWorker : public QObject
     Q_OBJECT
 
 public slots:
-    void doWork(Downloader *downloader, QThread *ptr_thread) {
-        qDebug() << endl << "doWork going in thread:" << downloader->self(ptr_thread);
+    void doWork(Downloader *downloader, QThread *ptr_thread)
+    {
+        qDebug() << endl
+                 << "doWork going in thread:" << downloader->self(ptr_thread);
         QString result;
         Downloader::download_thread(downloader, ptr_thread);
         emit resultReady(result);
@@ -145,6 +146,5 @@ public slots:
 signals:
     void resultReady(const QString &result);
 };
-
 
 #endif // _DOWNLOADER_H

@@ -27,6 +27,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QMessageBox>
+#include <QDir>
 
 #include <QProgressDialog>
 #include "../downloader.h"
@@ -121,7 +122,7 @@ private:
     int jobsToStop;
 
     int rowOfDownloader(Downloader *dloader) const;
-    DbManager db = DbManager("mDownloader.db");
+    DbManager db = DbManager(QDir::homePath() + "/mDownloader.db");
 };
 
 #endif // MAINWINDOW_H

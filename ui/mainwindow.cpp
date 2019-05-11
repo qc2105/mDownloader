@@ -499,7 +499,7 @@ void MainWindow::about()
     QString about;
     about = tr("mDownloader: A GUI download accelerator.");
     about += QChar::LineSeparator;
-    about += tr("Version: 1.1.1Build001.");
+    about += tr("Version: 1.1.1Build002.");
     about += QChar::LineSeparator;
     about += tr("Written by Chuan Qin. Email: qc2105@qq.com");
     about += QChar::LineSeparator;

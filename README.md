@@ -10,16 +10,20 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 
 	a) Visual Studio Community 2013, download from http://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx or google this: vs2013.4_ce_enu.iso;
 	b) Qt 5.4.0 for Windows 32-bit (VS 2013), download from http://download.qt-project.org/official_releases/qt/5.4/5.4.0/qt-opensource-windows-x86-msvc2013-5.4.0.exe;
+	c) CMake (Version >= 3.1.0)
 
 ### 2. Build
 
-	a) Use Qt Creator to open mDownloader.pro
-	b) Press CTRL+R
+	a) Run cmake-gui
+	b) Follow the instructions
 
 ## Under Ubuntu 14.04 and above:
 
- 	a) sudo apt-get install qtcreator
-	b) Use Qt Creator to open mDownloader.pro and build
+ 	a) sudo apt-get install qt5-default
+	b) Install CMake (Version >= 3.1.0)
+	c) mkdir build; cd build 
+	d) cmake ..
+	e) make -j12
 
 # Automated Testing
 

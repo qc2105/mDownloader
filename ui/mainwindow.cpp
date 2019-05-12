@@ -138,10 +138,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 MainWindow::~MainWindow()
 {
-    for (int i = 0; i < jobs.size(); i++)
-    {
-        delete jobs[i].downloader;
-    }
+    
 }
 
 void MainWindow::setActionsEnabled()

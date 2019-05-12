@@ -399,7 +399,7 @@ int MainWindow::rowOfDownloader(Downloader *dloader) const
     // Return the row that displays this downloader's status or -1
     // if the downloader is not known.
     int row = 0;
-    for(int i = 0; i < jobs.size(); i++)
+    for (int i = 0; i < jobs.size(); i++)
     {
         if (jobs[i].downloader == dloader)
             return row;

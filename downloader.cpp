@@ -639,9 +639,7 @@ int Downloader::save_temp_file_exit(void)
     db.addTask(localMg);
 
     setState(Status::Paused);
-    QString inforMsg = tr("Downloading paused.");
-    emit errorHappened(inforMsg);
-    emit done();
+    
     return 0;
 }
 

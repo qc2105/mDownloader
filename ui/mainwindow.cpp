@@ -358,7 +358,7 @@ void MainWindow::removeJob()
 
     // Stop the downloader.
     dloader->stop();
-    db.removeTask(QString(dloader->get_localMg().c_str()));
+    db.removeTask(jobs.at(row).tempFilePath);
 
     // Remove the row from the view.
     delete jobView->takeTopLevelItem(row);

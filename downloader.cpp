@@ -942,6 +942,7 @@ void Downloader::run(void)
     {
         qCritical() << "Can not get the info of the file " << endl;
         emit errorHappened(QString(tr("Can not get the info of the file ")));
+        setState(Status::Failed);
 
         return;
     }

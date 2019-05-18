@@ -43,7 +43,6 @@ class QProgressDialog;
 class QSlider;
 QT_END_NAMESPACE
 
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -67,7 +66,6 @@ private slots:
 
     void about();
     void setActionsEnabled();
-
 
     // First version multi-jobs UI
     bool addJob();
@@ -105,7 +103,8 @@ private:
     QAction *openDirAction;
     QAction *resuMeJobAction;
 
-    struct Job {
+    struct Job
+    {
         QString fileName;
         QString tempFilePath;
         QString destinationDir;

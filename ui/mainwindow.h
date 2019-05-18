@@ -80,6 +80,7 @@ private slots:
     void updateDownloadRate(QString speed);
     void updateDownloaded(QString downloaded);
     void updateRemainingTime(QString remainingTime);
+    void openDoubleClickedFile(const QModelIndex &index);
 
 signals:
     void newTaskShow(void);

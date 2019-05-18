@@ -127,6 +127,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             this, SLOT(removeJob()));
     connect(openDirAction, SIGNAL(triggered()),
             this, SLOT(openDir()));
+    connect(jobView, SIGNAL(doubleClicked(const QModelIndex &)),
+            this, SLOT(openDoubleClickedFile(const QModelIndex &)));
 
     // Resume form mg!s
     QStringList mgs = db.getAllPaths();
@@ -504,4 +506,19 @@ void MainWindow::about()
     msgBox.setWindowTitle(tr("mDownloader"));
     msgBox.setText(about);
     msgBox.exec();
+}
+
+void MainWindow::openDoubleClickedFile(const QModelIndex &index)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+    int row = index.row();
+    QString path = jobs.at(row).destinationDir + QDir::toNativeSeparators("/") + jobs.at(row).fileName;
+    if (!QFile(path).exists())
+    {
+        return;
+    }
+    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }

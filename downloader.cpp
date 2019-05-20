@@ -521,6 +521,7 @@ int Downloader::remove_temp_file_exit(void)
 
     tempFile->remove();
     delete tempFile;
+    db.removeTask(localMg);
 
     return 0;
 }

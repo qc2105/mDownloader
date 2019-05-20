@@ -19,7 +19,7 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 
 ## Under Ubuntu 14.04 and above:
 
- 	a) sudo apt-get install qt5-default
+ 	a) sudo apt-get install qt5-default libsqlite3-dev
 	b) Install CMake (Version >= 3.1.0)
 	c) mkdir build; cd build 
 	d) cmake ..

@@ -47,6 +47,7 @@ NewTask::NewTask(QWidget *parent) :
     ui->spinBoxThreadNum->setMinimum(1);
     ui->spinBoxThreadNum->setValue(1);
     connect(ui->lineEditUrl, SIGNAL(textChanged(QString)), this, SLOT(setFileNameSlot(QString)));
+    connect(ui->lineEditFileName, SIGNAL(textChanged(QString)), this, SLOT(setFileNameSlot(QString)));
 }
 
 NewTask::~NewTask()

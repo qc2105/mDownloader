@@ -19,34 +19,34 @@ find_package(Qt5Sql CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 set(mDownloader_SRCS
-    main.cpp
-    advio.cpp 
-    block.cpp 
-    debug.cpp 
-    downloader.cpp 
-    ftp.cpp 
-    ftpparser.cpp 
-    ftpplugin.cpp 
-    header.cpp 
-    http.cpp 
-    httpplugin.cpp 
-    plugin.cpp 
-    progressbar.cpp 
-    proxy.cpp 
-    task.cpp 
-    url.cpp 
-    utils.cpp 
-    status.cpp 
-    ui/newtask.cpp 
-    ui/mainwindow.cpp 
-    ui/jobview.cc 
-    ui/errormessagebox.cpp 
-    dbmanager.cpp
-    ui/newtask.ui
-    mDownloader_zh_CN.ts
-    mDownloader.qrc
+    src/main.cpp
+    src/advio.cpp 
+    src/block.cpp 
+    src/debug.cpp 
+    src/downloader.cpp 
+    src/ftp.cpp 
+    src/ftpparser.cpp 
+    src/ftpplugin.cpp 
+    src/header.cpp 
+    src/http.cpp 
+    src/httpplugin.cpp 
+    src/plugin.cpp 
+    src/progressbar.cpp 
+    src/proxy.cpp 
+    src/task.cpp 
+    src/url.cpp 
+    src/utils.cpp 
+    src/status.cpp 
+    src/ui/newtask.cpp 
+    src/ui/mainwindow.cpp 
+    src/ui/jobview.cc 
+    src/ui/errormessagebox.cpp 
+    src/dbmanager.cpp
+    src/ui/newtask.ui
+    src/mDownloader_zh_CN.ts
+    src/mDownloader.qrc
 )
 
-qt5_add_resources(mDownloader.qrc)
+qt5_add_resources(src/mDownloader.qrc)
 add_executable(mDownloader ${mDownloader_SRCS})
 target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)

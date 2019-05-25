@@ -21,7 +21,7 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 set(tests_SRCS
     db_manager/test_db_manager.cpp
-    ../dbmanager.cpp
+    ../src/dbmanager.cpp
 )
 
 add_executable(tests ${tests_SRCS})

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <gtest/gtest.h>
-#include "../dbmanager.h"
+#include "../src/dbmanager.h"
 
 using namespace std;
 using ::testing::InitGoogleTest;

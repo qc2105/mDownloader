@@ -7,6 +7,7 @@ if (UNIX)
 endif (UNIX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(src/protocols src/db src/protocols/http src/protocols/ftp src/ src/io src/ui)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -20,33 +21,33 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 
 set(mDownloader_SRCS
     src/main.cpp
-    src/advio.cpp 
-    src/block.cpp 
+    src/io/advio.cpp 
+    src/io/block.cpp 
     src/debug.cpp 
     src/downloader.cpp 
-    src/ftp.cpp 
-    src/ftpparser.cpp 
-    src/ftpplugin.cpp 
-    src/header.cpp 
-    src/http.cpp 
-    src/httpplugin.cpp 
-    src/plugin.cpp 
+    src/protocols/ftp/ftp.cpp 
+    src/protocols/ftp/ftpparser.cpp 
+    src/protocols/ftp/ftpplugin.cpp 
+    src/protocols/header.cpp 
+    src/protocols/http/http.cpp 
+    src/protocols/http/httpplugin.cpp 
+    src/protocols/plugin.cpp 
     src/progressbar.cpp 
-    src/proxy.cpp 
+    src/protocols/proxy.cpp 
     src/task.cpp 
-    src/url.cpp 
+    src/protocols/url.cpp 
     src/utils.cpp 
     src/status.cpp 
     src/ui/newtask.cpp 
     src/ui/mainwindow.cpp 
     src/ui/jobview.cc 
-    src/ui/errormessagebox.cpp 
-    src/dbmanager.cpp
+    src/ui/errormessagebox.cpp
     src/ui/newtask.ui
-    src/mDownloader_zh_CN.ts
-    src/mDownloader.qrc
+    src/ui/mDownloader.qrc
+    src/db/dbmanager.cpp
+    src/translations/mDownloader_zh_CN.ts
 )
 
-qt5_add_resources(src/mDownloader.qrc)
+qt5_add_resources(src/ui/mDownloader.qrc)
 add_executable(mDownloader ${mDownloader_SRCS})
 target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)

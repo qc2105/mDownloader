@@ -21,8 +21,8 @@
  *  2005 by xiaosuo
  */
 
-#include "ui/mainwindow.h"
-#include "ui/newtask.h"
+#include "mainwindow.h"
+#include "newtask.h"
 #include "myget.h"
 
 #include <QObject>

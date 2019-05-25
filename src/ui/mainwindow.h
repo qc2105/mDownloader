@@ -30,10 +30,10 @@
 #include <QDir>
 
 #include <QProgressDialog>
-#include "../downloader.h"
+#include "downloader.h"
 #include "errormessagebox.h"
 #include "jobview.h"
-#include "../dbmanager.h"
+#include "dbmanager.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;

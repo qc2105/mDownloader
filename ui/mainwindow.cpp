@@ -268,6 +268,7 @@ void MainWindow::resuMeJob(QString tempFilePath)
     job.downloader = downloader;
     job.fileName = fileName;
     job.destinationDir = DownDir;
+    job.tempFilePath = tempFilePath;
     jobs << job;
 
     // Create and add a row in the job view for this download.

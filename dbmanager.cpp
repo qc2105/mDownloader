@@ -87,7 +87,7 @@ bool DbManager::addTask(const QString& mg_file_path)
 bool DbManager::removeTask(const QString& mg_file_path)
 {
     bool success = false;
-
+    qDebug() << "remove: " << mg_file_path;
     if (taskExists(mg_file_path))
     {
         QSqlQuery queryDelete;

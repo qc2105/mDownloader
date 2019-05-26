@@ -45,6 +45,7 @@ private slots:
     void on_buttonBoxWhetherOk_accepted();
     void on_pushButtonSetSaveLocation_clicked();
     void setFileNameSlot(QString);
+    void setSaveLocationSlot(QString);
     void on_pushButtonSetTempFile_clicked();
 
 private:

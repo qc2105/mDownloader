@@ -47,7 +47,7 @@ NewTask::NewTask(QWidget *parent) :
     ui->spinBoxThreadNum->setMinimum(1);
     ui->spinBoxThreadNum->setValue(1);
     connect(ui->lineEditUrl, SIGNAL(textChanged(QString)), this, SLOT(setFileNameSlot(QString)));
-    connect(ui->lineEditFileName, SIGNAL(textChanged(QString)), this, SLOT(setFileNameSlot(QString)));
+    connect(ui->lineEditFileName, SIGNAL(textChanged(QString)), this, SLOT(setSaveLocationSlot(QString)));
 }
 
 NewTask::~NewTask()
@@ -84,6 +84,15 @@ void NewTask::setFileNameSlot(QString Url)
         m_localFileName = "index.html";
     }
     ui->lineEditFileName->setText(/*"file-" + QUuid::createUuid().toString()+ */m_localFileName);
+    ui->lineEditSaveLocation->setText(QDir::toNativeSeparators(m_dir + QDir::separator() +  /*"file-" + QUuid::createUuid().toString()+*/ m_localFileName));
+}
+
+void NewTask::setSaveLocationSlot(QString Url)
+{
+    m_localFileName = Url.section("/", -1);
+    if (m_localFileName.isEmpty()) {
+        m_localFileName = "index.html";
+    }
     ui->lineEditSaveLocation->setText(QDir::toNativeSeparators(m_dir + QDir::separator() +  /*"file-" + QUuid::createUuid().toString()+*/ m_localFileName));
 }
 

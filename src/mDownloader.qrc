@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/icons/bottom.png</file>
+        <file>ui/icons/edit_add.png</file>
+        <file>ui/icons/edit_remove.png</file>
+        <file>ui/icons/exit.png</file>
+        <file>ui/icons/motocool.jpg</file>
+        <file>ui/icons/player_pause.png</file>
+        <file>ui/icons/player_play.png</file>
+        <file>ui/icons/player_stop.png</file>
+        <file>ui/icons/stop.png</file>
+        <file>ui/icons/folder.png</file>
+    </qresource>
+</RCC>

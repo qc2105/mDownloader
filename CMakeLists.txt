@@ -43,11 +43,11 @@ set(mDownloader_SRCS
     src/ui/jobview.cc 
     src/ui/errormessagebox.cpp
     src/ui/newtask.ui
-    src/ui/mDownloader.qrc
+    src/mDownloader.qrc
     src/db/dbmanager.cpp
     src/translations/mDownloader_zh_CN.ts
 )
 
-qt5_add_resources(src/ui/mDownloader.qrc)
+qt5_add_resources(src/mDownloader.qrc)
 add_executable(mDownloader ${mDownloader_SRCS})
 target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)

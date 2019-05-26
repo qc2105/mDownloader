@@ -17,7 +17,7 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 	a) Run cmake-gui
 	b) Follow the instructions
 
-## Under Ubuntu 14.04 and above:
+## Under deepin-15.10.1 / Ubuntu 14.04 and above:
 
  	a) sudo apt-get install qt5-default libsqlite3-dev
 	b) Install CMake (Version >= 3.1.0)

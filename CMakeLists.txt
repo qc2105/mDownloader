@@ -51,3 +51,6 @@ set(mDownloader_SRCS
 qt5_add_resources(src/mDownloader.qrc)
 add_executable(mDownloader ${mDownloader_SRCS})
 target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)
+
+install(TARGETS mDownloader
+	RUNTIME DESTINATION /usr/bin)

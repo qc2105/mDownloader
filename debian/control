@@ -1,0 +1,17 @@
+Source: mdownloader
+Section: devel
+Priority: optional
+Maintainer: Chuan Qin <qc2105@qq.com>
+Build-Depends: debhelper (>= 9), cmake (>= 3.1.0), qt5-default
+Standards-Version: 3.9.8
+Homepage: https://github.com/qc2105/mDownloader
+#Vcs-Git: https://anonscm.debian.org/collab-maint/mdownloader.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/mdownloader.git
+
+Package: mdownloader
+Architecture: any
+Depends: qt5-default
+Description:A Cross-Platform Multi-thread downloader 
+mDownloader: A cross-platform multiple-threads GUI download accelerator based on Qt and modified mytget(https://github.com/lytsing/mytget). It is fast, with maximum 99 threads do the downloading job at the same time, takes full advantage of your network resources when does HTTP/HTTPS/FTP downloading.
+
+

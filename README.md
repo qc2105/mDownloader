@@ -24,6 +24,8 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 	c) mkdir build; cd build 
 	d) cmake ..
 	e) make -j12
+	f) sudo make install
+	g) mDownloader
 
 # Automated Testing
 

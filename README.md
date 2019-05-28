@@ -32,7 +32,7 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 All tests are under folder test. You'd better run the tests under Windows 7, because some wierd random errors happen when I run them under Ubuntu 14.04.
 
 # Latest official build 
-N/A
+https://github.com/qc2105/mDownloader/releases/latest
 
 # Screenshots
 ![screenshot1](https://raw.githubusercontent.com/qc2105/mDownloader/master/Screenshot%20from%202019-04-13%2016-53-31.png)

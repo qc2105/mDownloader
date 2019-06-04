@@ -29,10 +29,15 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 
 # Automated Testing
 
-All tests are under folder test. You'd better run the tests under Windows 7, because some wierd random errors happen when I run them under Ubuntu 14.04.
+All tests are under folder tests. You'd better run the tests under Windows 7, because some wierd random errors happen when I run them under Ubuntu 14.04.
 
-# Latest official build 
-N/A
+# Latest official build / deb package for deepin 15.10.1 and Ubuntu 18.04 LTS
+	https://github.com/qc2105/mDownloader/releases/latest
+	a) sudo apt-get install qt5-default
+	b) wget https://github.com/qc2105/mDownloader/releases/download/v1.1/mdownloader_1.1-1_amd64.deb
+	c) sudo dpkg -i mdownloader_1.1-1_amd64.deb
+	After doing these, just type mDownloader in your terminal to run the app.
+	The executable's full path is /usr/bin/mDownloader.
 
 # Screenshots
 ![screenshot1](https://raw.githubusercontent.com/qc2105/mDownloader/master/Screenshot%20from%202019-04-13%2016-53-31.png)

@@ -7,7 +7,7 @@ if (UNIX)
 endif (UNIX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include_directories(../ ../src/db/)
+include_directories(../src/db/ ../src/protocols/ ../src/)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -22,6 +22,9 @@ find_package(Qt5Widgets CONFIG REQUIRED)
 set(tests_SRCS
     db_manager/test_db_manager.cpp
     ../src/db/dbmanager.cpp
+    Header/test_header.cpp 
+    ../src/protocols/header.cpp 
+    ../src/utils.cpp
 )
 
 add_executable(tests ${tests_SRCS})

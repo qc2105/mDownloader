@@ -27,6 +27,9 @@ set(tests_SRCS
     ../src/utils.cpp
 )
 
+add_executable(testServer TINY_WebServer/csapp.c TINY_WebServer/tiny.c)
+target_link_libraries(testServer pthread)
+
 add_executable(tests ${tests_SRCS})
 target_link_libraries(tests Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql gtest pthread)
 

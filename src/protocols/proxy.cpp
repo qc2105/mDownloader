@@ -1,5 +1,4 @@
 /*  mDownloader - a multiple-threads downloading accelerator program that is based on Myget.
- *  
  *  2015 By Richard (qc2105@qq.com)
  *
  *  This program is free software; you can redistribute it and/or modify

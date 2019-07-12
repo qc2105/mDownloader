@@ -29,7 +29,7 @@ It is fast, with maximum 99 threads do the downloading job at the same time, tak
 
 # Automated Testing
 
-All tests are under folder tests. You'd better run the tests under Windows 7, because some wierd random errors happen when I run them under Ubuntu 14.04.
+All tests are under folder tests. 
 
 # Latest official build / deb package for deepin 15.10.1 and Ubuntu 18.04 LTS
 	https://github.com/qc2105/mDownloader/releases/latest

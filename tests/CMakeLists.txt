@@ -47,7 +47,6 @@ set(test_Downloader_SRCS
     ../src/status.cpp 
     ../src/db/dbmanager.cpp
     TestDownloader/test_Downloader.cpp 
-    TestDownloader/hashworker.cpp
 )
 
 add_executable(testServer TINY_WebServer/csapp.c TINY_WebServer/tiny.c)

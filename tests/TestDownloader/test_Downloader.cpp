@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QFile>
-
+#include <QProcess>
 
 #include <iostream>
 #include <gtest/gtest.h>
@@ -15,8 +15,9 @@ using namespace std;
 using ::testing::InitGoogleTest;
 using ::testing::Test;
 
-#define TEST_HASH "58613b2e077e1fff7e134f1a1c42bf0c"
-#define TEST_URL "http://localhost:8000/test.test"
+QString expected_md5 = "58613b2e077e1fff7e134f1a1c42bf0c";
+const QString TEST_FILE = "tests";
+const QString TEST_URL = "http://localhost:8000/" + TEST_FILE;
 #define TEMP_FILE "test.tmp"
 #define REPEAT_TIMES 1
 
@@ -41,7 +42,7 @@ protected:
     Downloader *dloader;
     QFile *m_file;
 
-public :
+public:
     void setHash(QString);
     QString hash(QString fileName, QString hashAlgorithm);
 };
@@ -64,7 +65,8 @@ QString downloaderTest::hash(QString FileName, QString HashAlgorithm)
         qDebug() << m_file->size();
     }
 
-    if(m_file->open(QIODevice::ReadOnly)) {   //ToDo: what if the file is a directory?
+    if (m_file->open(QIODevice::ReadOnly))
+    { //ToDo: what if the file is a directory?
         if (HashAlgorithm == "Md5")
         {
             hash = new QCryptographicHash(QCryptographicHash::Md5);
@@ -79,20 +81,23 @@ QString downloaderTest::hash(QString FileName, QString HashAlgorithm)
             hash = new QCryptographicHash(QCryptographicHash::Sha256);
         }
 #endif
-        while (!m_file->atEnd()) {
+        while (!m_file->atEnd())
+        {
             hash->addData(m_file->read(readingBlockSize));
         }
         resultByteArray = hash->result();
         hashHexByteArray = resultByteArray.toHex();
 
         resultQString += hashHexByteArray.data();
-
-    }else {
+    }
+    else
+    {
         resultQString += QString("file open error");
     }
 
     delete hash;
-    if (resultQString.isEmpty()) {
+    if (resultQString.isEmpty())
+    {
         resultQString += QString("Error, empty resultQString");
     }
 
@@ -115,8 +120,8 @@ TEST_F(downloaderTest, testIntegrity)
     dloader->setThreadNum(1);
 
     dloader->runMyself(TEST_URL);
-   
-    int timeout = 10;
+
+    int timeout = 0;
     while (dloader->getState() != Status::DownloadStatus::Finished && timeout <= 10)
     {
         sleep(1);
@@ -125,17 +130,21 @@ TEST_F(downloaderTest, testIntegrity)
 
     m_hash = hash(QString(TEMP_FILE), "Md5");
     string result = m_hash.toStdString();
-    string expected = QString(TEST_HASH).toStdString();
+    expected_md5 = hash(TEST_FILE, "Md5");
+    string expected = expected_md5.toStdString();
 
     ASSERT_STREQ(result.c_str(), expected.c_str());
 }
 
 int main(int argc, char *argv[])
 {
+    QString test_server_command = "./testServer 8000";
+    QProcess tiny_webServer;
+    tiny_webServer.start(test_server_command);
+
     QApplication a(argc, argv);
 
     InitGoogleTest();
 
     return RUN_ALL_TESTS();
 }
-

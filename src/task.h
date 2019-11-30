@@ -32,6 +32,7 @@
 #include "macro.h"
 #include "url.h"
 #include "proxy.h"
+#include <string>
 
 class Task
 {
@@ -43,11 +44,11 @@ class Task
         const qint64 get_file_size();
         void set_file_size(qint64 size);
 
-        const char* get_local_dir(void);
-        void set_local_dir(const char *dir);
+        const std::string get_local_dir(void);
+        void set_local_dir(const std::string& dir);
 
-		const char* get_local_file(void);
-        void set_local_file(const char *file);
+		const std::string get_local_file(void);
+        void set_local_file(const std::string& file);
 
         const char* get_referer(void);
 
@@ -119,8 +120,8 @@ class Task
         long retryInterval;
         int tryCount;
         qint64 fileSize;
-		char *localDir;
-		char *localFile;
+		std::string localDir;
+		std::string localFile;
 		char *referer;
 };
 

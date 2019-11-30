@@ -35,7 +35,8 @@
 int ProgressBar::graphWidth = 0;
 
 ProgressBar::ProgressBar(qint64 total_size, int block_num)
-    :data(NULL)
+    :data(NULL),
+	curr_downloaded(0)
 {
 	int i;
 	int screenWidth;

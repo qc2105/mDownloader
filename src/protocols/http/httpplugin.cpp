@@ -185,14 +185,14 @@ HttpPlugin::get_info(Task *task)
         filename = strstr(filename, "filename=");
         if(filename){
             filename += strlen("filename=");
-            if(task->get_local_file() == NULL){
+            if(task->get_local_file() == std::string("")){
                 task->set_local_file(filename);
             }
         }
     }
 
 
-    if(task->get_local_file() == NULL &&  task->get_file() == NULL ){
+    if(task->get_local_file() == std::string("") &&  task->get_file() == NULL ){
         task->set_local_file("index.html");
     }
 

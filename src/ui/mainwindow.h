@@ -121,7 +121,11 @@ private:
     int jobsToStop;
 
     int rowOfDownloader(Downloader *dloader) const;
+#ifdef _DEBUG
+	DbManager db = DbManager(QDir::homePath() + "/mDownloader_DEBUG.db");
+#else
     DbManager db = DbManager(QDir::homePath() + "/mDownloader.db");
+#endif
 };
 
 #endif // MAINWINDOW_H

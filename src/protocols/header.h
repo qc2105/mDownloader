@@ -44,9 +44,9 @@ class HeadData
 {
 	public:
 		HeadData():head(NULL){};
-		HeadData(const HeadDataNode &that);
+		//HeadData(const HeadDataNode &that);
 		~HeadData();
-		HeadData& operator = (const HeadData&that);
+		//HeadData& operator = (const HeadData&that);
 
 		// set a attrib property if not exist, add one
 		int set_attr(const char *attrName, const char *attrValue);

@@ -62,9 +62,9 @@ TEST_F(dbTest, test_getAllPaths)
     ASSERT_STREQ(paths[2].toStdString().c_str(), path3.toStdString().c_str());
 }
 
-int main()
+int main(int argc, char**argv)
 {
-    InitGoogleTest();
+    InitGoogleTest(&argc, argv);
 
     return RUN_ALL_TESTS();
 }

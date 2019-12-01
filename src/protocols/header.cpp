@@ -98,9 +98,12 @@ void
 HeadData::remove_all()
 {
     HeadDataNode *it;
+	HeadDataNode *temp;
 
-    for(it = head; it != NULL; it = it->next){
+    for(it = head; it != NULL; it = temp){
+		temp = it->next;
         delete it;
+		it = NULL;
     }
 
     head = NULL;

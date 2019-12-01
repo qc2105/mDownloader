@@ -66,7 +66,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {   
-    if (QLibraryInfo::isDebugBuild())
+    if (!QLibraryInfo::isDebugBuild())
     {
         qInstallMessageHandler(myMessageOutput);
     }

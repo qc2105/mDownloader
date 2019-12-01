@@ -33,16 +33,14 @@ Task::Task()
 	timeout = 30;
     ftpActive = PASV;
     threadNum = 10;
-	localDir = NULL;
-	localFile = NULL;
+	localDir = std::string("");
+	localFile = std::string("");
 	referer = NULL;
 }
 
 Task::~Task()
 {
-    delete[] localDir;
-	delete[] localFile;
-	delete[] referer;
+    delete[] referer;
 }
 	
 const qint64 Task::get_file_size()
@@ -54,31 +52,29 @@ void Task::set_file_size(qint64 size)
     fileSize = size;
 }
 
-const char*
+const std::string
 Task::get_local_dir(void)
 {
 	return localDir;
 }
 
 void
-Task::set_local_dir(const char *dir)
+Task::set_local_dir(const std::string& dir)
 {
-    delete[] localDir;
-    localDir = StrDup(dir);
+	localDir = dir;
 }
 
 
-const char*
+const std::string 
 Task::get_local_file(void)
 {
 	return localFile;
 }
 
 void
-Task::set_local_file(const char *file)
+Task::set_local_file(const std::string& file)
 {
-    delete[] localFile;
-    localFile = StrDup(file);
+    localFile = file;
 }
 
 const char*
@@ -169,11 +165,9 @@ Task::operator = (Task& task)
 {
     if(this == &task) return *this;
 
-    delete[] localDir;
-    delete[] localFile;
     delete[] referer;
-    localDir = StrDup(task.get_local_dir());
-    localFile = StrDup(task.get_local_file());
+    localDir = task.get_local_dir();
+    localFile = task.get_local_file();
     referer = StrDup(task.get_referer());
     fileSize = task.fileSize;
     isDirectory = task.isDirectory;

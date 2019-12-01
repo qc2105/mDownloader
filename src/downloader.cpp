@@ -136,24 +136,23 @@ _reinit_plugin:
 
 int Downloader::init_local_file_name(void)
 {
-    int length;
-    char *tmpStr;
-
-    length = task.get_local_dir() ? strlen(task.get_local_dir()) : 1;
-    length += task.get_local_file() ? strlen(task.get_local_file()) : strlen(task.get_file());
-    length += 6;
-
-    tmpStr = new char[length];
-
-    snprintf(tmpStr, length, "%s/%s.mg!",
-              task.get_local_dir() ? task.get_local_dir() : ".",
-             task.get_local_file() ? task.get_local_file() : task.get_file());
-    delete[] localPath;
-    delete[] localMg;
-    tmpStr[length - 5] = '\0';
-    localPath = StrDup(tmpStr);
-    tmpStr[length - 5] = '.';
-    localMg = tmpStr;
+ 	std::string tempString;
+   	 
+	tempString = task.get_local_dir() == std::string("") ? "" : task.get_local_dir() + QString(QDir::separator()).toStdString();
+	tempString += task.get_local_file() == std::string("") ? task.get_file() : task.get_local_file();
+	tempString += m_szTempFileSuffix;
+	
+	if (!localPath)
+	{
+		delete[] localPath;
+	}
+	if (!localMg)
+	{
+		delete[] localMg;
+	}
+	std::string localPathString = tempString.substr(0, tempString.size() - m_szTempFileSuffix.size());
+    localPath = StrDup(localPathString.c_str());
+   	localMg = StrDup(tempString.c_str());
 
     return 0;
 }
@@ -992,9 +991,9 @@ void Downloader::resumeTask(void)
     start();
 }
 
-void Downloader::setLocalDirectory(QString QDir)
+void Downloader::setLocalDirectory(QString dir)
 {
-    task.set_local_dir(QDir.toUtf8().constData());
+   	task.set_local_dir(dir.toStdString());
     is_dirSetted = true;
 }
 

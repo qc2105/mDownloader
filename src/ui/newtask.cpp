@@ -39,7 +39,7 @@ NewTask::NewTask(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_dir = QDir::toNativeSeparators(QDir::homePath());
+    m_dir = QDir::toNativeSeparators(QDir::homePath()); // TODO: store configurations in db, like creating a table called settings and store download dir etc. to it.
     m_tempFilePath = m_dir;
     ui->lineEditUrl->setText(tr("Paste or input the URL of the file you want to download here."));
     ui->lineEditSaveLocation->setText(m_dir + QDir::separator() + ui->lineEditFileName->text());

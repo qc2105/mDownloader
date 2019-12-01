@@ -136,16 +136,11 @@ _reinit_plugin:
 
 int Downloader::init_local_file_name(void)
 {
-    size_t length;
-	std::string tempString;
-    
-	length = task.get_local_dir() == std::string("") ? 0 : task.get_local_dir().length();
-   	length += task.get_local_file() == std::string("") ? strlen(task.get_file()) : task.get_local_file().length();
-    length += 6;
-	 
+ 	std::string tempString;
+   	 
 	tempString = task.get_local_dir() == std::string("") ? "" : task.get_local_dir() + QString(QDir::separator()).toStdString();
 	tempString += task.get_local_file() == std::string("") ? task.get_file() : task.get_local_file();
-	tempString += ".mg!";
+	tempString += m_szTempFileSuffix;
 	
 	if (!localPath)
 	{
@@ -155,9 +150,8 @@ int Downloader::init_local_file_name(void)
 	{
 		delete[] localMg;
 	}
-    tempString[length - 5] = '\0';
-    localPath = StrDup(tempString.c_str());
-    tempString[length - 5] = '.';
+	std::string localPathString = tempString.substr(0, tempString.size() - m_szTempFileSuffix.size());
+    localPath = StrDup(localPathString.c_str());
    	localMg = StrDup(tempString.c_str());
 
     return 0;

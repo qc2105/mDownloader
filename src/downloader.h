@@ -126,6 +126,7 @@ private:
     QString errorString;
     QString stateString;
     DbManager &db;
+	const std::string m_szTempFileSuffix = ".mg!";
 };
 
 class DownloadWorker : public QObject

@@ -64,15 +64,28 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     }
 }
 
+#ifdef WIN32
+#include <Windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	LPSTR lpszCmdLine, int nCmdShow)
+#else
 int main(int argc, char *argv[])
+#endif
 {   
     if (!QLibraryInfo::isDebugBuild())
     {
         qInstallMessageHandler(myMessageOutput);
     }
 
+    QCoreApplication::setOrganizationName("QC2105");
+    QCoreApplication::setApplicationName("mDownloader");
+	
+#ifdef WIN32
+	int argc = 0;
+	QApplication a(argc, NULL);
+#else
     QApplication a(argc, argv);
-
+#endif
     QTranslator qtTranslator;
        qtTranslator.load("qt_" + QLocale::system().name(),
                QLibraryInfo::location(QLibraryInfo::TranslationsPath));

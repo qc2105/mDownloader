@@ -33,6 +33,8 @@
 #include "ui_newtask.h"
 
 
+const QString NewTask::saveLocationKey = "saveLocation";
+
 NewTask::NewTask(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewTask)
@@ -42,7 +44,11 @@ NewTask::NewTask(QWidget *parent) :
     m_dir = QDir::toNativeSeparators(QDir::homePath()); // TODO: store configurations in db, like creating a table called settings and store download dir etc. to it.
     m_tempFilePath = m_dir;
     ui->lineEditUrl->setText(tr("Paste or input the URL of the file you want to download here."));
-    ui->lineEditSaveLocation->setText(m_dir + QDir::separator() + ui->lineEditFileName->text());
+    
+    QString defaultSavePath = m_dir + QDir::separator() + ui->lineEditFileName->text();
+    QString savePath = m_qSettings.value(saveLocationKey, defaultSavePath).toString();
+    ui->lineEditSaveLocation->setText(savePath);
+    
     ui->spinBoxThreadNum->setMinimum(1);
     ui->spinBoxThreadNum->setValue(1);
     connect(ui->lineEditUrl, SIGNAL(textChanged(QString)), this, SLOT(setFileNameSlot(QString)));
@@ -98,7 +104,14 @@ void NewTask::setSaveLocationSlot(QString Url)
 void NewTask::on_pushButtonSetSaveLocation_clicked()
 {
     m_dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::homePath(), QFileDialog::ShowDirsOnly| QFileDialog::DontResolveSymlinks);
-    ui->lineEditSaveLocation->setText(QDir::toNativeSeparators(m_dir + QDir::separator() + ui->lineEditFileName->text()));
+	if (m_dir.isEmpty())
+	{
+		m_dir = QDir::homePath();
+	}
+    QString newSavePath = QDir::toNativeSeparators(m_dir + QDir::separator());
+    ui->lineEditSaveLocation->setText(newSavePath + ui->lineEditFileName->text());
+    m_qSettings.setValue(saveLocationKey, newSavePath);
+    m_qSettings.sync();
 }
 
 void NewTask::on_pushButtonSetTempFile_clicked()

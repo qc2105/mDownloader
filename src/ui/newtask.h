@@ -25,6 +25,7 @@
 
 #include <QDialog>
 #include <QProgressDialog>
+#include <QSettings>
 
 
 namespace Ui {
@@ -52,7 +53,8 @@ private:
     QString m_dir;
     QString m_localFileName;
     QString m_tempFilePath;
-
+    QSettings m_qSettings;
+    static const QString saveLocationKey;
 
 signals:
     void newJob(QString fileName, QString DownloadedDirectory, QString URL, int threadNum);
@@ -62,7 +64,6 @@ signals:
     void setSaveLocation(QString);
     void setDownloadedDirectory(QString);
     void setThreadNum(int);
-
 };
 
 #endif // NEWTASK_H

@@ -501,7 +501,7 @@ void MainWindow::about()
     about += QChar::LineSeparator;
     about += tr("Written by Chuan Qin. Email: qc2105@qq.com");
     about += QChar::LineSeparator;
-    about += tr("It is based on Qt, and licensed under GPL.");
+    about += tr("It is based on Qt and Myget, and licensed under GPL.");
     msgBox.setWindowTitle(tr("mDownloader"));
     msgBox.setText(about);
     msgBox.exec();

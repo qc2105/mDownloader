@@ -6,6 +6,7 @@
 5) Delete a task without deleting the files.
 6) <del>Use GoogleTest to replace Qt's test framework</del>.
 7) Make log level settable.
+8) Reschelue the threads when one or more of them are finished, so there're still enough threads.
    
 
 

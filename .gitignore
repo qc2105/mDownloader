@@ -17,3 +17,5 @@ moc*.h
 
 build/
 .bzr/
+/.vs
+/CMakeSettings.json

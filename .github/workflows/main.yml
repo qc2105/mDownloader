@@ -31,3 +31,14 @@ jobs:
           cd build
           cmake ../
           make
+
+    - name: Test
+      run: |
+          cd ..
+          cd tests
+          mkdir build
+          cd build
+          cmake ../
+          make
+          ./tests
+          ./testDownloader

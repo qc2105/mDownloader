@@ -22,15 +22,25 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
+      with:
+        path: ../Qt
+        key: QtCache
+
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
-
+    
     - name: Build
       run: |
           mkdir build
           cd build
           cmake ../
           make
+
+    - name: Setup Google Test
+      uses: CyberZHG/github-action-gtest@master
 
     - name: Test
       run: |

@@ -19,3 +19,5 @@ build/
 .bzr/
 /.vs
 /CMakeSettings.json
+out/
+tests/out/

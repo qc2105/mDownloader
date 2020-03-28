@@ -34,7 +34,6 @@ jobs:
 
     - name: Test
       run: |
-          cd ..
           cd tests
           mkdir build
           cd build

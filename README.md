@@ -1,8 +1,10 @@
 # mDownloader
+
+[![Actions Status](https://github.com/qc2105/mDownloader/workflows/CI/badge.svg)](https://github.com/qc2105/mDownloader/actions)
+
 mDownloader: A cross-platform multiple-threads GUI download accelerator based on Qt and modified mytget(https://github.com/lytsing/mytget).
 It is fast, with maximum 99 threads do the downloading job at the same time, takes full advantage of your network resources when does HTTP/HTTPS/FTP downloading. 
 
-[![Actions Status](https://github.com/qc2105/mDownloader/workflows/CI/badge.svg)](https://github.com/qc2105/mDownloader/actions)
 
 # How to build
 

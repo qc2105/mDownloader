@@ -43,7 +43,15 @@ jobs:
 
     - name: Install Google Test
       run: |
-          sudo apt-get install libgtest libgtest-dev -y
+          sudo apt-get install libgtest-dev -y
+          cd /usr/src/googletest/googletest
+          sudo mkdir build
+          cd build
+          sudo cmake ..
+          sudo make
+          sudo cp libgtest* /usr/lib/
+          cd ..
+          sudo rm -rf build
 
     - name: Test
       run: |

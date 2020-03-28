@@ -33,11 +33,7 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         cached: ${{ steps.cache-qt.outputs.cache-hit }}
-
-    - name: Install sqlite3 Qt5 plugin
-      run: |
-          sudo apt-get install libqt5sql5-sqlite -y
-    
+        
     - name: Build
       run: |
           mkdir build
@@ -59,6 +55,7 @@ jobs:
 
     - name: Test
       run: |
+          sudo apt-get install libqt5sql5-sqlite -y
           cd tests
           mkdir build
           cd build

@@ -22,18 +22,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Cache Qt
-      id: cache-qt
-      uses: actions/cache@v1
-      with:
-        path: ../Qt
-        key: QtCache
+    - name: Install build dependencis
+      run: |
+        sudo apt-get install cmake build-essential qt5-default libqt5sql5-sqlite libssl-dev -y
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-      with:
-        cached: ${{ steps.cache-qt.outputs.cache-hit }}
-        
     - name: Build
       run: |
           mkdir build
@@ -55,7 +47,6 @@ jobs:
 
     - name: Test
       run: |
-          sudo apt-get install libqt5sql5-sqlite -y
           cd tests
           mkdir build
           cd build

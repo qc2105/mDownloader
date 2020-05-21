@@ -273,7 +273,7 @@ void MainWindow::resuMeJob(QString tempFilePath)
     // Create and add a row in the job view for this download.
     QTreeWidgetItem *item = new QTreeWidgetItem(jobView);
 
-    QString baseFileName = QFileInfo(fileName).baseName();
+    QString baseFileName = QFileInfo(fileName).completeBaseName();
 
     item->setText(0, baseFileName);
     item->setToolTip(0, tr("File: %1<br>Destination: %2")
@@ -333,7 +333,7 @@ void MainWindow::addJob(QString fileName, QString DownDir, QString URL, int thre
     // Create and add a row in the job view for this download.
     QTreeWidgetItem *item = new QTreeWidgetItem(jobView);
 
-    QString baseFileName = QFileInfo(fileName).baseName();
+    QString baseFileName = QFileInfo(fileName).completeBaseName();
 
     item->setText(0, baseFileName);
     item->setToolTip(0, tr("File: %1<br>Destination: %2")

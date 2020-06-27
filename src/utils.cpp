@@ -227,10 +227,12 @@ file_exist(const char *file)
     return qf.exists();
 }
 
+#ifdef WIN32
 #include <windows.h>
 #include <powrprof.h>
 #include <Shlobj.h>
 #include <memory>
+#endif
 
 // code from qbittorrent-4.2.5
 void shutdownComputer(const ShutdownDialogAction& action)

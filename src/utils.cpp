@@ -232,6 +232,7 @@ file_exist(const char *file)
 #include <Shlobj.h>
 #include <memory>
 
+// code from qbittorrent-4.2.5
 void shutdownComputer(const ShutdownDialogAction& action)
 {
 #ifdef WIN32

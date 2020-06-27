@@ -60,4 +60,14 @@ void convert_time(char *timeStr, double time);
 // file exist
 bool file_exist(const char *filename);
 
+enum class ShutdownDialogAction
+{
+    Exit,
+    Shutdown,
+    Suspend,
+    Hibernate
+};
+
+void shutdownComputer(const ShutdownDialogAction& action);
+
 #endif // _UTILS_H

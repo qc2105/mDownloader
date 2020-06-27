@@ -74,6 +74,7 @@ private slots:
     void openDir();
     void moveJobUp();
     void moveJobDown();
+    void powerOff();
     void updateState(QString state);
     void updateProgress(int percent);
     void updateDownloadRate(QString speed);

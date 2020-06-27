@@ -56,7 +56,11 @@ elseif (WIN32)
     add_executable(mDownloader WIN32 ${mDownloader_SRCS})
 endif (UNIX)
 
-target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)
+if (UNIX)
+    target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)
+elseif (WIN32)
+    target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql PowrProf.lib)
+endif (UNIX)
 
 install(TARGETS mDownloader
 	RUNTIME DESTINATION /usr/bin)

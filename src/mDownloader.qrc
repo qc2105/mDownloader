@@ -10,5 +10,6 @@
         <file>ui/icons/player_stop.png</file>
         <file>ui/icons/stop.png</file>
         <file>ui/icons/folder.png</file>
+        <file>ui/icons/power_off.png</file>
     </qresource>
 </RCC>

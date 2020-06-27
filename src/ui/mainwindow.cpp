@@ -85,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     pauseJobAction = new QAction(QIcon(":/ui/icons/player_pause.png"), tr("&Pause job"), this);
     removeJobAction = new QAction(QIcon(":/ui/icons/player_stop.png"), tr("&Remove job"), this);
     openDirAction = new QAction(QIcon(":/ui/icons/folder.png"), tr("Open file &directory"), this);
+    QAction* powerOffAction = new QAction(QIcon(":/ui/icons/power_off.png"), tr("Poweroff the computer"), this);
 
     // File menu
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -95,6 +96,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     fileMenu->addAction(openDirAction);
     fileMenu->addSeparator();
     fileMenu->addAction(QIcon(":/ui/icons/exit.png"), tr("E&xit"), this, SLOT(close()));
+
+    // Tools menu
+    QMenu* toolMenu = menuBar()->addMenu(tr("&Tool"));
+    toolMenu->addAction(powerOffAction);
 
     // Help Menu
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -126,6 +131,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
             this, SLOT(removeJob()));
     connect(openDirAction, SIGNAL(triggered()),
             this, SLOT(openDir()));
+    connect(powerOffAction, SIGNAL(triggered()),
+            this, SLOT(powerOff()));
     connect(jobView, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(openDoubleClickedFile(const QModelIndex &)));
 
@@ -382,6 +389,11 @@ void MainWindow::openDir()
     int row = jobView->indexOfTopLevelItem(jobView->currentItem());
     QDesktopServices::openUrl(QUrl("file:///" + jobs.at(row).destinationDir));
     setActionsEnabled();
+}
+
+void MainWindow::powerOff()
+{
+    shutdownComputer(ShutdownDialogAction::Shutdown);
 }
 
 void MainWindow::moveJobUp()

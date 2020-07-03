@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     pauseJobAction = new QAction(QIcon(":/ui/icons/player_pause.png"), tr("&Pause job"), this);
     removeJobAction = new QAction(QIcon(":/ui/icons/player_stop.png"), tr("&Remove job"), this);
     openDirAction = new QAction(QIcon(":/ui/icons/folder.png"), tr("Open file &directory"), this);
-    QAction* powerOffAction = new QAction(QIcon(":/ui/icons/power_off.png"), tr("Poweroff the computer"), this);
+    powerOffAction = new QAction(tr("Poweroff the computer on downloads done"), this);
 
     // File menu
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     // Tools menu
     QMenu* toolMenu = menuBar()->addMenu(tr("&Tool"));
+    powerOffAction->setCheckable(true);
+    powerOffAction->setChecked(false);
     toolMenu->addAction(powerOffAction);
 
     // Help Menu
@@ -132,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(openDirAction, SIGNAL(triggered()),
             this, SLOT(openDir()));
     connect(powerOffAction, SIGNAL(triggered()),
-            this, SLOT(powerOff()));
+            this, SLOT(powerOffToggle()));
     connect(jobView, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(openDoubleClickedFile(const QModelIndex &)));
 
@@ -391,9 +393,9 @@ void MainWindow::openDir()
     setActionsEnabled();
 }
 
-void MainWindow::powerOff()
+void MainWindow::powerOffToggle()
 {
-    shutdownComputer(ShutdownDialogAction::Shutdown);
+    
 }
 
 void MainWindow::moveJobUp()
@@ -434,6 +436,20 @@ void MainWindow::updateState(QString state)
         item->setText(4, state);
     }
     setActionsEnabled();
+
+    bool allJobDone = true;
+    for (auto job : jobs)
+    {
+        if (job.downloader->getState() != Status::DownloadStatus::Finished)
+        {
+            allJobDone = false;
+        }
+    }
+
+    if (allJobDone && (!jobs.isEmpty()) && powerOffAction->isChecked())
+    {
+        shutdownComputer(ShutdownDialogAction::Shutdown);
+    }
 }
 
 void MainWindow::updateProgress(int percent)

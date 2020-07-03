@@ -74,7 +74,7 @@ private slots:
     void openDir();
     void moveJobUp();
     void moveJobDown();
-    void powerOff();
+    void powerOffToggle();
     void updateState(QString state);
     void updateProgress(int percent);
     void updateDownloadRate(QString speed);
@@ -103,6 +103,7 @@ private:
     QAction *removeJobAction;
     QAction *openDirAction;
     QAction *resuMeJobAction;
+    QAction *powerOffAction;
 
     struct Job
     {

@@ -40,7 +40,7 @@ StrDup(const char *str)
 	char *ptr;
 	int i;
 
-	if(str == NULL) return NULL;
+    if(str == nullptr) return nullptr;
 
 	for(i = 0; str[i] != '\0'; i ++) ;
 	ptr = new char[i + 1];
@@ -220,7 +220,7 @@ convert_time(char *timeStr, double time)
 bool
 file_exist(const char *file)
 {
-	assert(file != NULL);
+    assert(file != nullptr);
 
     QFile qf(file);
 
@@ -232,6 +232,10 @@ file_exist(const char *file)
 #include <powrprof.h>
 #include <Shlobj.h>
 #include <memory>
+#endif
+
+#if (defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)) && defined(QT_DBUS_LIB)
+#include <QDBusInterface>
 #endif
 
 // code from qbittorrent-4.2.5
@@ -275,5 +279,58 @@ void shutdownComputer(const ShutdownDialogAction& action)
 	// Disable shutdown privilege.
 	tkp.Privileges[0].Attributes = 0;
 	AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
+#elif (defined(Q_OS_UNIX) && !defined(Q_OS_MACOS)) && defined(QT_DBUS_LIB)
+    // Use dbus to power off / suspend the system
+    if (action != ShutdownDialogAction::Shutdown) {
+        // Some recent systems use systemd's logind
+        QDBusInterface login1Iface("org.freedesktop.login1", "/org/freedesktop/login1",
+                                   "org.freedesktop.login1.Manager", QDBusConnection::systemBus());
+        if (login1Iface.isValid()) {
+            if (action == ShutdownDialogAction::Suspend)
+                login1Iface.call("Suspend", false);
+            else
+                login1Iface.call("Hibernate", false);
+            return;
+        }
+        // Else, other recent systems use UPower
+        QDBusInterface upowerIface("org.freedesktop.UPower", "/org/freedesktop/UPower",
+                                   "org.freedesktop.UPower", QDBusConnection::systemBus());
+        if (upowerIface.isValid()) {
+            if (action == ShutdownDialogAction::Suspend)
+                upowerIface.call("Suspend");
+            else
+                upowerIface.call("Hibernate");
+            return;
+        }
+        // HAL (older systems)
+        QDBusInterface halIface("org.freedesktop.Hal", "/org/freedesktop/Hal/devices/computer",
+                                "org.freedesktop.Hal.Device.SystemPowerManagement",
+                                QDBusConnection::systemBus());
+        if (action == ShutdownDialogAction::Suspend)
+            halIface.call("Suspend", 5);
+        else
+            halIface.call("Hibernate");
+    }
+    else {
+        // Some recent systems use systemd's logind
+        QDBusInterface login1Iface("org.freedesktop.login1", "/org/freedesktop/login1",
+                                   "org.freedesktop.login1.Manager", QDBusConnection::systemBus());
+        if (login1Iface.isValid()) {
+            login1Iface.call("PowerOff", false);
+            return;
+        }
+        // Else, other recent systems use ConsoleKit
+        QDBusInterface consolekitIface("org.freedesktop.ConsoleKit", "/org/freedesktop/ConsoleKit/Manager",
+                                       "org.freedesktop.ConsoleKit.Manager", QDBusConnection::systemBus());
+        if (consolekitIface.isValid()) {
+            consolekitIface.call("Stop");
+            return;
+        }
+        // HAL (older systems)
+        QDBusInterface halIface("org.freedesktop.Hal", "/org/freedesktop/Hal/devices/computer",
+                                "org.freedesktop.Hal.Device.SystemPowerManagement",
+                                QDBusConnection::systemBus());
+        halIface.call("Shutdown");
+    }
 #endif
 }

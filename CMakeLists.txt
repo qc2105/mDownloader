@@ -21,6 +21,9 @@ find_package(Qt5Gui CONFIG REQUIRED)
 find_package(Qt5Network CONFIG REQUIRED)
 find_package(Qt5Sql CONFIG REQUIRED)
 find_package(Qt5Widgets CONFIG REQUIRED)
+if (UNIX)
+find_package(Qt5DBus CONFIG REQUIRED)
+endif(UNIX)
 
 set(mDownloader_SRCS
     src/main.cpp
@@ -60,7 +63,7 @@ elseif (WIN32)
 endif (UNIX)
 
 if (UNIX)
-    target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql)
+    target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql Qt5::DBus)
 elseif (WIN32)
     target_link_libraries(mDownloader Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network Qt5::Sql PowrProf.lib)
 endif (UNIX)
